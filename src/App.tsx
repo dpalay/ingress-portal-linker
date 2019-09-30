@@ -1,4 +1,5 @@
 import React from 'react';
+import Button from 'antd/es/button';
 import logo from './logo.svg';
 import './App.css';
 
@@ -15,10 +16,11 @@ const App: React.FC = () => {
           href="https://reactjs.org"
           target="_blank"
           rel="noopener noreferrer"
-        >
-          Learn React
+        >Learn React
         </a>
+           <Button type="primary">Learn React</Button>
       </header>
+      
     </div>
   );
 }
