@@ -1,8 +1,8 @@
 import React from 'react';
 import Button from 'antd/es/button';
-import logo from './logo.svg';
+import logo from '../../logo.svg';
 import './App.css';
-import myClickFunction from './events'
+import myClickFunction from '../../Utils/events'
 
 const App: React.FC = () => {
   return (
