@@ -2,6 +2,7 @@ import React from 'react';
 import Button from 'antd/es/button';
 import logo from './logo.svg';
 import './App.css';
+import myClickFunction from './events'
 
 const App: React.FC = () => {
   return (
@@ -18,7 +19,8 @@ const App: React.FC = () => {
           rel="noopener noreferrer"
         >Learn React
         </a>
-           <Button type="primary">Learn React</Button>
+            
+           <Button type="primary" onClick={myClickFunction}>Learn React</Button>
       </header>
       
     </div>
