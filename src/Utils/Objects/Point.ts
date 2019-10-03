@@ -1,4 +1,4 @@
-export class Point {
+class Point {
     x: number
     y: number
     constructor(x: number = 0, y: number = 0){
@@ -14,9 +14,15 @@ export class Point {
         return Math.sqrt((this.x - otherPoint.x)**2 + (this.y - otherPoint.y)**2 )
     }
 
-    toString(): string{
+    toString(): string {
         return `(x:${this.x}, y:${this.y})`
     } 
 
+    set(otherPoint: Point): void {
+        this.x = otherPoint.x
+        this.y = otherPoint.y
+    }
+
 }
 
+export default Point

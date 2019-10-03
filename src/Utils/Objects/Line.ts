@@ -1,8 +1,8 @@
-import { Point } from "./Points";
+import Point from "./Point";
 import { Vector } from '@geometric/vector';
 
 
-export class Line{
+class Line{
     p1: Point;
     p2: Point;
     vector: Vector;
@@ -22,3 +22,5 @@ export class Line{
         return ((this.p2.y - this.p1.y)/(this.p2.x - this.p1.x))
     }
 }
+
+export default Line
