@@ -1,15 +1,32 @@
-import React from 'react';
+import React, { useState, useReducer } from 'react';
 import Button from 'antd/es/button';
 import Layout from 'antd/es/layout';
 import logo from '../../logo.svg';
 import './App.css';
 import myClickFunction from '../../Utils/events'
 import Viz from '../Viz/Viz'
+import TestControl from '../TestControl/TestControl';
 
 const {Header, Footer, Content, Sider} = Layout
 
+const initialState = {count: 3}
+
+  const handleClickReducer = (state: {count: number}, action: {type: string})  => {
+    switch (action.type){
+      case 'increment':
+        return {count: state.count + 1};
+      case 'decrement':
+        return {count: Math.max(0,state.count - 1)};
+      default:
+        throw new Error();
+    }
+  }
 
 const App: React.FC = () => {
+  
+    let [value, dispatch] = useReducer(handleClickReducer, initialState);
+
+
   return (
     <div>
       <Layout>
@@ -20,7 +37,9 @@ const App: React.FC = () => {
 
           </Sider>
           <Content>
-            <Viz vizProps={[]} />
+            <TestControl value={value.count} handleclick={() => dispatch({type: 'increment'})}/>
+            <TestControl value={value.count} handleclick={() => dispatch({type: 'decrement'})}/>
+            <Viz data={[value]} />
           </Content>
         </Layout>
         <Footer>
