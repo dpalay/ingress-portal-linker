@@ -18,6 +18,10 @@ class Link {
     toString(): string {
         return `${this.source.title} -> ${this.dest.title}`
     }
+
+    intersect(otherlink: Link): boolean{
+        return this.line.intersect(otherlink.line)
+    }
 }
 
 export default Link
