@@ -1,7 +1,5 @@
 import React, { useState, useReducer } from 'react';
-import Button from 'antd/es/button';
 import Layout from 'antd/es/layout';
-import logo from '../../logo.svg';
 import './App.css';
 import myClickFunction from '../../Utils/events'
 import Viz from '../Viz/Viz'
@@ -14,7 +12,7 @@ const initialState = {count: 3}
   const handleClickReducer = (state: {count: number}, action: {type: string})  => {
     switch (action.type){
       case 'increment':
-        return {count: state.count + 1};
+        return {count: Math.min(20, state.count + 1)};
       case 'decrement':
         return {count: Math.max(0,state.count - 1)};
       default:
@@ -37,8 +35,8 @@ const App: React.FC = () => {
 
           </Sider>
           <Content>
-            <TestControl value={value.count} handleclick={() => dispatch({type: 'increment'})}/>
-            <TestControl value={value.count} handleclick={() => dispatch({type: 'decrement'})}/>
+            <TestControl text="Add a ball" value={value.count} handleclick={() => dispatch({type: 'increment'})}/>
+            <TestControl text="Remove a ball" value={value.count} handleclick={() => dispatch({type: 'decrement'})}/>
             <Viz data={[value]} />
           </Content>
         </Layout>

@@ -5,6 +5,7 @@ interface IProps {
     data?: {}[]
     value?: number
     handleclick?: () => void
+    text?: string
 }
 
 
@@ -13,8 +14,7 @@ const TestControl: React.FC<IProps> = (props: IProps)  => {
     
 
     return (<div>
-        {props.value}
-        <Button type="primary" title="clickme!" onClick={props.handleclick}/>
+        <Button type="primary" title="clickme!" onClick={props.handleclick}>{props.text || "click me!"} </Button>
     </div>
     )
 }

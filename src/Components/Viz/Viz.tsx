@@ -38,8 +38,9 @@ const Viz: React.FC<IProps> = (props: IProps)  => {
             .transition()
                 .duration(500)
                 .ease(d3.easeQuadInOut)
-                .attr("transform", (datum, i , arr) => `translate(${x((i+1)/(arr.length+1))},200)`)
-                .style("fill", (d,i,arr) => (d3.interpolateWarm((i+1)/(arr.length+1))))
+                .attr("transform", (datum, i , arr) => `translate(${x((i+1)/(arr.length+1))},${Math.random()*500})`)
+                .style("fill", (d,i,arr) => (d3.interpolateRainbow((i+1)/(arr.length+1))))
+                .style("stroke", "none")
             
 
             // Adding new elements
@@ -47,12 +48,16 @@ const Viz: React.FC<IProps> = (props: IProps)  => {
             .append("g").attr("class", "circleContainer")
             .attr("new", "true")
             .attr("transform", (datum, i , arr) => `translate(${x((i+1)/(arr.length+1))},200)`)
-            .style("fill", (d,i,arr) => (d3.interpolateWarm((i+1)/(arr.length+1))))
+            .style("fill", (d,i,arr) => (d3.interpolateRainbow((i+1)/(arr.length+1))))
+            .style("stroke", "black")
             .data(data)
             .append("circle")
             .attr("r", 10)
             //@ts-ignore
+            // the merge returns the g, not the circle
             .merge(update)
+            // This should happen to both old and new
+            //.attr("r", Math.random()*15 + 5)
     
     }
 }, [props.data, d3Container.current])
