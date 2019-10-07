@@ -20,9 +20,17 @@ const initialState = {count: 3}
     }
   }
 
+  
 const App: React.FC = () => {
   
     let [value, dispatch] = useReducer(handleClickReducer, initialState);
+    let [dirty, setDirty] = useState(false)
+
+    function resetDirty(){
+      setDirty(!dirty)
+      console.log(dirty)
+    }
+
 
 
   return (
@@ -37,7 +45,11 @@ const App: React.FC = () => {
           <Content>
             <TestControl text="Add a ball" value={value.count} handleclick={() => dispatch({type: 'increment'})}/>
             <TestControl text="Remove a ball" value={value.count} handleclick={() => dispatch({type: 'decrement'})}/>
-            <Viz data={[value]} />
+            <TestControl text={`Update Chart:${dirty}`} value={value.count} handleclick={resetDirty} />
+            <Viz 
+            data={[value]}
+            dirty={dirty} 
+            reset={resetDirty}/>
           </Content>
         </Layout>
         <Footer>

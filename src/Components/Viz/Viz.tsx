@@ -5,6 +5,8 @@ import { appendFile } from 'fs';
 
 interface IProps {
     data?: {count: number}[]
+    reset: React.Dispatch<React.SetStateAction<boolean>>
+    dirty: boolean
 }
 
 const Viz: React.FC<IProps> = (props: IProps)  => {
@@ -14,9 +16,18 @@ const Viz: React.FC<IProps> = (props: IProps)  => {
        const d3Container = useRef(null);
        const dataset = d3.range(20)
 
+       // This function sets the individual circles to be random sizes between 5 and 20
+       function randomizeSizes(){
+            props.reset(!props.dirty)
+            d3.selectAll('circle').attr("r", () => Math.random()*15+5)
+            //d3.selectAll('circle').each((datum, i,arr) => {d3.select(arr[i]).attr("r", Math.random()*15+5)})
+       }
+
 
     useEffect(() => {
         if (props.data && d3Container.current) {
+           
+
             const svg = d3.select(d3Container.current);
             // set width/height of SVG
             svg.attr('width', 500).attr('height',500)
@@ -53,14 +64,15 @@ const Viz: React.FC<IProps> = (props: IProps)  => {
             .data(data)
             .append("circle")
             .attr("r", 10)
+            .on("click",randomizeSizes)
             //@ts-ignore
             // the merge returns the g, not the circle
             .merge(update)
             // This should happen to both old and new
-            //.attr("r", Math.random()*15 + 5)
+            
     
     }
-}, [props.data, d3Container.current])
+}, [props.data, props.reset, d3Container.current])
     return (<div className="viz">
         <svg className="d3-component" ref={d3Container}/>
     </div>)
