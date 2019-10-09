@@ -2,8 +2,11 @@ import React, { useState, useReducer } from 'react';
 import Layout from 'antd/es/layout';
 import './App.css';
 import myClickFunction from '../../Utils/events'
-import Viz from '../Viz/Viz'
 import TestControl from '../TestControl/TestControl';
+//@ts-ignore
+import {XYPlot, XAxis, YAxis, HorizontalGridLines, LineSeries} from 'react-vis';
+
+
 
 const {Header, Footer, Content, Sider} = Layout
 
@@ -37,7 +40,19 @@ const App: React.FC = () => {
           <Content>
             <TestControl text="Add a ball" value={value.count} handleclick={() => dispatch({type: 'increment'})}/>
             <TestControl text="Remove a ball" value={value.count} handleclick={() => dispatch({type: 'decrement'})}/>
-            <Viz data={[value]} />
+            <XYPlot
+  width={300}
+  height={300}>
+  <HorizontalGridLines />
+  <LineSeries
+    data={[
+      {x: 1, y: 10},
+      {x: 2, y: 5},
+      {x: 3, y: 15}
+    ]}/>
+  <XAxis />
+  <YAxis />
+</XYPlot>
           </Content>
         </Layout>
         <Footer>
