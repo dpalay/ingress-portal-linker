@@ -28,19 +28,20 @@ const App: React.FC = () => {
   return (
     <div>
       <Layout>
-        <Header>
+        <Header className="ingress-frame dark-back">
+          <h2>Dave's Portal Linker</h2>
         </Header>
         <Layout>
-          <Sider>
+          <Sider className="ingress-frame">
 
           </Sider>
-          <Content>
+          <Content className="ingress-frame dark-back">
             <TestControl text="Add a ball" value={value.count} handleclick={() => dispatch({type: 'increment'})}/>
             <TestControl text="Remove a ball" value={value.count} handleclick={() => dispatch({type: 'decrement'})}/>
             <Viz data={[value]} />
           </Content>
         </Layout>
-        <Footer>
+        <Footer className="ingress-frame dark-back">
 
         </Footer>
       </Layout>

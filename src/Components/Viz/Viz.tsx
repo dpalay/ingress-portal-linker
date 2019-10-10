@@ -18,14 +18,21 @@ const Viz: React.FC<IProps> = (props: IProps)  => {
     useEffect(() => {
         if (props.data && d3Container.current) {
             const svg = d3.select(d3Container.current);
+            //@ts-ignore
+            console.log(d3.select("div.viz").node().getBoundingClientRect())
+            //@ts-ignore
+            const width = d3.select("div.viz").node().getBoundingClientRect().width
+            //@ts-ignore
+            const height = 800
             // set width/height of SVG
-            svg.attr('width', 500).attr('height',500)
+            svg.attr('width', width).attr('height',height)
             
             // get data from props
             const data = dataset.slice(0,props.data[0].count)
     
             //setup ranges
-            let x = d3.scaleLinear().domain([0,1]).range([10,490])
+            let x = d3.scaleLinear().domain([0,1]).range([0,width])
+            let y = d3.scaleLinear().domain([0,1]).range([height,0])
             
             const update = svg.selectAll("g.circleContainer").data(data)
             
@@ -38,7 +45,7 @@ const Viz: React.FC<IProps> = (props: IProps)  => {
             .transition()
                 .duration(500)
                 .ease(d3.easeQuadInOut)
-                .attr("transform", (datum, i , arr) => `translate(${x((i+1)/(arr.length+1))},${Math.random()*500})`)
+                .attr("transform", (datum, i , arr) => `translate(${x((i+1)/(arr.length+1))},${y((i+1)/(arr.length+1))})`)
                 .style("fill", (d,i,arr) => (d3.interpolateRainbow((i+1)/(arr.length+1))))
                 .style("stroke", "none")
             
@@ -47,7 +54,7 @@ const Viz: React.FC<IProps> = (props: IProps)  => {
             update.enter()
             .append("g").attr("class", "circleContainer")
             .attr("new", "true")
-            .attr("transform", (datum, i , arr) => `translate(${x((i+1)/(arr.length+1))},200)`)
+            .attr("transform", (datum, i , arr) => `translate(${x((i+1)/(arr.length+1))},${y((i+1)/(arr.length+1))})`)
             .style("fill", (d,i,arr) => (d3.interpolateRainbow((i+1)/(arr.length+1))))
             .style("stroke", "black")
             .data(data)
@@ -62,7 +69,7 @@ const Viz: React.FC<IProps> = (props: IProps)  => {
     }
 }, [props.data, d3Container.current])
     return (<div className="viz">
-        <svg className="d3-component" ref={d3Container}/>
+        <svg className="d3-component ingress-frame" ref={d3Container}/>
     </div>)
 
 }
