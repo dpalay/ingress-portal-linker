@@ -1,10 +1,11 @@
+/// <reference path="../../react-vis.d.ts"/> 
 import React, { useState, useReducer } from 'react';
 import Layout from 'antd/es/layout';
 import './App.css';
+import './style.css'
 import myClickFunction from '../../Utils/events'
 import TestControl from '../TestControl/TestControl';
-//@ts-ignore
-import {XYPlot, XAxis, YAxis, HorizontalGridLines, LineSeries} from 'react-vis';
+import {XYPlot, XAxis, YAxis, HorizontalGridLines, LineSeries} from 'react-vis'
 
 
 
@@ -41,8 +42,8 @@ const App: React.FC = () => {
             <TestControl text="Add a ball" value={value.count} handleclick={() => dispatch({type: 'increment'})}/>
             <TestControl text="Remove a ball" value={value.count} handleclick={() => dispatch({type: 'decrement'})}/>
             <XYPlot
-  width={300}
-  height={300}>
+  width={600}
+  height={600}>
   <HorizontalGridLines />
   <LineSeries
     data={[
@@ -50,6 +51,12 @@ const App: React.FC = () => {
       {x: 2, y: 5},
       {x: 3, y: 15}
     ]}/>
+  <LineSeries
+  data={[{x:1,y:5},{x:4,y:20}]}
+  color={"#ee6600"}
+  
+  />
+
   <XAxis />
   <YAxis />
 </XYPlot>
