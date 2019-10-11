@@ -51,3 +51,39 @@ h2 {
     margin: 3px;
     padding: 2px 15px;
 }
+
+.level_0 {
+    color: #333;
+}
+
+.level_1 {
+    color: #fece5a;
+}
+
+.level_2 {
+    color: #ffa630;
+}
+
+.level_3 {
+    color: #ff7315;
+}
+
+.level_4 {
+    color: #e40000;
+}
+
+.level_5 {
+    color: #fd2992;
+}
+
+.level_6 {
+    color: #eb26cd;
+}
+
+.level_7 {
+    color: #c124e0;
+}
+
+.level_8 {
+    color: #9627f4;
+}
