@@ -38,7 +38,7 @@ const Viz: React.FC<IProps> = (props: IProps)  => {
             
             // When removing an entry
             update.exit().remove();
-
+            
 
             // update existing elements
             update.attr("new", "false")
@@ -51,18 +51,21 @@ const Viz: React.FC<IProps> = (props: IProps)  => {
             
 
             // Adding new elements
-            update.enter()
-            .append("g").attr("class", "circleContainer")
+            let update_enter = update.enter()
+            update_enter.append("g").attr("class", "circleContainer")
             .attr("new", "true")
             .attr("transform", (datum, i , arr) => `translate(${x((i+1)/(arr.length+1))},${y((i+1)/(arr.length+1))})`)
             .style("fill", (d,i,arr) => (d3.interpolateRainbow((i+1)/(arr.length+1))))
             .style("stroke", "black")
             .data(data)
             .append("circle")
-            .attr("r", 10)
+            .attr("r", 0)
+            .transition()
+            .duration(500)
+            .attr("r",10)
             //@ts-ignore
             // the merge returns the g, not the circle
-            .merge(update)
+            update_enter.merge(update)
             // This should happen to both old and new
             //.attr("r", Math.random()*15 + 5)
     
