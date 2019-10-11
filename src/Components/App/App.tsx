@@ -67,7 +67,7 @@ const App: React.FC = () => {
             </Row>
             <Row type="flex">
               <Col span="24">
-                <Viz data={[value]} />
+                <Viz data={value} whichAnchor={whichAnchor} />
               </Col>
             </Row>
           </Content>
