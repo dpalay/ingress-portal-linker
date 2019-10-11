@@ -44,7 +44,7 @@ const App: React.FC = () => {
           <Sider className="ingress-frame">
             <Row type="flex" justify="center">
               <Col span={20}>
-            <AnchorSelect which={whichAnchor} setWhich={setWhichAnchor}/>
+                <AnchorSelect which={whichAnchor} setWhich={setWhichAnchor} />
               </Col>
             </Row>
           </Sider>
@@ -67,7 +67,7 @@ const App: React.FC = () => {
             </Row>
             <Row type="flex">
               <Col span="24">
-              <Viz data={[value]} />
+                <Viz data={[value]} />
               </Col>
             </Row>
           </Content>
@@ -95,8 +95,8 @@ export default App;
           rel="noopener noreferrer"
         >Learn React
         </a>
-            
+
            <Button type="primary" onClick={myClickFunction}>Learn React</Button>
       </header>
-      
+
     </div>*/
