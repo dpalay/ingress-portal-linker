@@ -5,7 +5,13 @@ import "./App.css";
 import myClickFunction from "../../Utils/events";
 import Viz from "../Viz/Viz";
 import TestControl from "../TestControl/TestControl";
+import AnchorSelect from "../AnchorSelect/AnchorSelect";
 
+
+type IDirection = "East" | "West" | "North" | "South"
+
+
+const directionDefault: IDirection = "West"
 const { Header, Footer, Content, Sider } = Layout;
 
 const initialState = { count: 3 };
@@ -25,7 +31,8 @@ const handleClickReducer = (
 };
 
 const App: React.FC = () => {
-  let [value, dispatch] = useReducer(handleClickReducer, initialState);
+  const [value, dispatch] = useReducer(handleClickReducer, initialState);
+  const [whichAnchor, setWhichAnchor] = useState(directionDefault as IDirection)
 
   return (
     <div>
@@ -34,7 +41,13 @@ const App: React.FC = () => {
           <h2>Dave's Portal Linker</h2>
         </Header>
         <Layout>
-          <Sider className="ingress-frame"></Sider>
+          <Sider className="ingress-frame">
+            <Row type="flex" justify="center">
+              <Col span={20}>
+            <AnchorSelect which={whichAnchor} setWhich={setWhichAnchor}/>
+              </Col>
+            </Row>
+          </Sider>
           <Content className="ingress-frame dark-back">
             <Row type="flex">
               <Col>

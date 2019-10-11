@@ -52,6 +52,11 @@ h2 {
     padding: 2px 15px;
 }
 
+.ingress-text{
+    color: #59fbea;
+    font-family: coda_regular, arial, helvetica, sans-serif;
+}
+
 .level_0 {
     color: #333;
 }
@@ -86,4 +91,30 @@ h2 {
 
 .level_8 {
     color: #9627f4;
+}
+
+table.compass{
+    margin-top: 10px;
+}
+table.compass tbody tr{
+    height: 50px;
+    width: 150px;
+    text-align: center;
+}
+
+table.compass tbody tr td{
+    width: 50px;
+}
+
+td.selector{
+    cursor: pointer;
+    background-color: #004746;
+    border: 1px solid #0ff;
+    border-radius: 1px;
+    -webkit-border-radius: 1px;
+    -moz-border-radius: 1px;
+    box-shadow: inset 0 0 6px rgba(255, 255, 255, 1);
+    -webkit-box-shadow: inset 0 0 6px rgba(255, 255, 255, 1);
+    -moz-box-shadow: inset 0 0 6px rgba(255, 255, 255, 1);
+    color: #0ff;
 }
