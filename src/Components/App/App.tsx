@@ -6,6 +6,7 @@ import myClickFunction from "../../Utils/events";
 import Viz from "../Viz/Viz";
 import TestControl from "../TestControl/TestControl";
 import AnchorSelect from "../AnchorSelect/AnchorSelect";
+import rawPortals from '../../Utils/Data/data'
 
 
 type IDirection = "East" | "West" | "North" | "South"
@@ -22,7 +23,7 @@ const handleClickReducer = (
 ) => {
   switch (action.type) {
     case "increment":
-      return { count: Math.min(20, state.count + 1) };
+      return { count: Math.min(rawPortals.length, state.count + 1) };
     case "decrement":
       return { count: Math.max(0, state.count - 1) };
     default:
@@ -66,9 +67,10 @@ const App: React.FC = () => {
               </Col>
             </Row>
             <Row type="flex">
-              <Col span="24">
+              <Col span={24}>
+              <Viz data={rawPortals} value={[value]} />
+              </Col> 
                 <Viz data={value} whichAnchor={whichAnchor} />
-              </Col>
             </Row>
           </Content>
         </Layout>

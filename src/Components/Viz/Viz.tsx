@@ -1,12 +1,15 @@
 import React, {useEffect, useRef} from 'react';
 import './Viz.css';
 import * as d3 from 'd3'
+//@ts-ignore
+import useDimensions from 'react-use-dimensions'
 import { appendFile } from 'fs';
 
 type IDirection = "East" | "West" | "North" | "South"
 interface IProps {
-    data?: {count: number}
     whichAnchor: IDirection
+    data?: { "guid": string; "title": string; "coordinates": { "lat": string; "lng": string; }; "link": { "intel": string; "gmap": string; }; "image": string; }[]
+    value?: {count: number}[]
 }
 
 const Viz: React.FC<IProps> = (props: IProps)  => {
@@ -14,27 +17,44 @@ const Viz: React.FC<IProps> = (props: IProps)  => {
        passes. In this case it will hold our component's SVG DOM element. It's
        initialized null and React will assign it later (see the return statement) */
        const d3Container = useRef(null);
-       const dataset = d3.range(20)
+       const [ref, { x, y, width, height }] = useDimensions();
+       
+       const portalDataset = (props.data && props.data.map((datum) => {
+           return {
+                x: +datum.coordinates.lng 
+               ,y: +datum.coordinates.lat
+               ,title: datum.title
+           }
+       })) || [{x:0, y:0, title:"null"}]
 
 
     useEffect(() => {
         if (props.data && d3Container.current) {
+            let val = (props.value && props.value[0] && props.value[0].count) || 0
             const svg = d3.select(d3Container.current);
-            //@ts-ignore
-            console.log(d3.select("div.viz").node().getBoundingClientRect())
-            //@ts-ignore
-            const width = d3.select("div.viz").node().getBoundingClientRect().width
             //@ts-ignore
             const height = 800
             // set width/height of SVG
             svg.attr('width', width).attr('height',height)
             
+            /**
+             * DEBUG INFO
+             */
+            svg.append("g").attr("class", "debug").classed("level_2", true).attr("transform", "translate(400,80)").text(width)
+
+
+            /**
+             * Starting the Dataset for the circles
+             */
             // get data from props
-            const data = dataset.slice(0,props.data.count)
-    
+            const data = portalDataset
+            //const data = portalDataset.slice(0,val)
+
             //setup ranges
-            let x = d3.scaleLinear().domain([0,1]).range([0,width])
-            let y = d3.scaleLinear().domain([0,1]).range([height,0])
+            //@ts-ignore
+            let x = d3.scaleLinear().domain(d3.extent(portalDataset, d => d.x)).range([0,width])
+            //@ts-ignore
+            let y = d3.scaleLinear().domain(d3.extent(portalDataset, d => d.y)).range([height,0])
             
             const update = svg.selectAll("g.circleContainer").data(data)
             
@@ -47,7 +67,7 @@ const Viz: React.FC<IProps> = (props: IProps)  => {
             .transition()
                 .duration(500)
                 .ease(d3.easeQuadInOut)
-                .attr("transform", (datum, i , arr) => `translate(${x((i+1)/(arr.length+1))},${y((i+1)/(arr.length+1))})`)
+                .attr("transform", (datum, i , arr) => `translate(${x(datum.x)},${y(datum.y)})`)
                 .style("fill", (d,i,arr) => (d3.interpolateRainbow((i+1)/(arr.length+1))))
                 .style("stroke", "none")
             
@@ -56,12 +76,13 @@ const Viz: React.FC<IProps> = (props: IProps)  => {
             let update_enter = update.enter()
             let update_group_with_data = update_enter.append("g").attr("class", "circleContainer")
             .attr("new", "true")
-            .attr("transform", (datum, i , arr) => `translate(${x((i+1)/(arr.length+1))},${y((i+1)/(arr.length+1))})`)
+            .attr("transform", (datum, i , arr) => `translate(${x(datum.x)},${y(datum.y)})`)
             .style("fill", (d,i,arr) => (d3.interpolateRainbow((i+1)/(arr.length+1))))
             .style("stroke", "black")
             .data(data)
             
             update_group_with_data.append("circle")
+            .attr("name", d=> d.title)
             .attr("r", 0)
             .transition()
             .duration(500)
@@ -75,8 +96,8 @@ const Viz: React.FC<IProps> = (props: IProps)  => {
             //.attr("r", Math.random()*15 + 5)
     
     }
-}, [props.data, d3Container.current])
-    return (<div className="viz">
+}, [props.data, props.value, d3Container.current])
+    return (<div className="viz" ref={ref}>
         <svg className="d3-component ingress-frame" ref={d3Container}/>
     </div>)
 
