@@ -3,8 +3,10 @@ import './Viz.css';
 import * as d3 from 'd3'
 import { appendFile } from 'fs';
 
+type IDirection = "East" | "West" | "North" | "South"
 interface IProps {
-    data?: {count: number}[]
+    data?: {count: number}
+    whichAnchor: IDirection
 }
 
 const Viz: React.FC<IProps> = (props: IProps)  => {
@@ -28,7 +30,7 @@ const Viz: React.FC<IProps> = (props: IProps)  => {
             svg.attr('width', width).attr('height',height)
             
             // get data from props
-            const data = dataset.slice(0,props.data[0].count)
+            const data = dataset.slice(0,props.data.count)
     
             //setup ranges
             let x = d3.scaleLinear().domain([0,1]).range([0,width])
@@ -52,17 +54,20 @@ const Viz: React.FC<IProps> = (props: IProps)  => {
 
             // Adding new elements
             let update_enter = update.enter()
-            update_enter.append("g").attr("class", "circleContainer")
+            let update_group_with_data = update_enter.append("g").attr("class", "circleContainer")
             .attr("new", "true")
             .attr("transform", (datum, i , arr) => `translate(${x((i+1)/(arr.length+1))},${y((i+1)/(arr.length+1))})`)
             .style("fill", (d,i,arr) => (d3.interpolateRainbow((i+1)/(arr.length+1))))
             .style("stroke", "black")
             .data(data)
-            .append("circle")
+            
+            update_group_with_data.append("circle")
             .attr("r", 0)
             .transition()
             .duration(500)
+            .delay((d,i) => i*50)
             .attr("r",10)
+            update_group_with_data.append("text").text(d=>d) 
             //@ts-ignore
             // the merge returns the g, not the circle
             update_enter.merge(update)
