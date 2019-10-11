@@ -1,55 +1,71 @@
-import React, { useState, useReducer } from 'react';
-import Layout from 'antd/es/layout';
-import './App.css';
-import myClickFunction from '../../Utils/events'
-import Viz from '../Viz/Viz'
-import TestControl from '../TestControl/TestControl';
+import React, { useState, useReducer } from "react";
+import Layout from "antd/es/layout";
+import { Row, Col } from "antd/es/grid";
+import "./App.css";
+import myClickFunction from "../../Utils/events";
+import Viz from "../Viz/Viz";
+import TestControl from "../TestControl/TestControl";
 
-const {Header, Footer, Content, Sider} = Layout
+const { Header, Footer, Content, Sider } = Layout;
 
-const initialState = {count: 3}
+const initialState = { count: 3 };
 
-  const handleClickReducer = (state: {count: number}, action: {type: string})  => {
-    switch (action.type){
-      case 'increment':
-        return {count: Math.min(20, state.count + 1)};
-      case 'decrement':
-        return {count: Math.max(0,state.count - 1)};
-      default:
-        throw new Error();
-    }
+const handleClickReducer = (
+  state: { count: number },
+  action: { type: string }
+) => {
+  switch (action.type) {
+    case "increment":
+      return { count: Math.min(20, state.count + 1) };
+    case "decrement":
+      return { count: Math.max(0, state.count - 1) };
+    default:
+      throw new Error();
   }
+};
 
 const App: React.FC = () => {
-  
-    let [value, dispatch] = useReducer(handleClickReducer, initialState);
-
+  let [value, dispatch] = useReducer(handleClickReducer, initialState);
 
   return (
     <div>
       <Layout>
-        <Header>
+        <Header className="ingress-frame dark-back">
+          <h2>Dave's Portal Linker</h2>
         </Header>
         <Layout>
-          <Sider>
-
-          </Sider>
-          <Content>
-            <TestControl text="Add a ball" value={value.count} handleclick={() => dispatch({type: 'increment'})}/>
-            <TestControl text="Remove a ball" value={value.count} handleclick={() => dispatch({type: 'decrement'})}/>
-            <Viz data={[value]} />
+          <Sider className="ingress-frame"></Sider>
+          <Content className="ingress-frame dark-back">
+            <Row type="flex">
+              <Col>
+                <TestControl
+                  text="Add a ball"
+                  value={value.count}
+                  handleclick={() => dispatch({ type: "increment" })}
+                />
+              </Col>
+              <Col>
+                <TestControl
+                  text="Remove a ball"
+                  value={value.count}
+                  handleclick={() => dispatch({ type: "decrement" })}
+                />
+              </Col>
+            </Row>
+            <Row type="flex">
+              <Col span="24">
+              <Viz data={[value]} />
+              </Col>
+            </Row>
           </Content>
         </Layout>
-        <Footer>
-
-        </Footer>
+        <Footer className="ingress-frame dark-back"></Footer>
       </Layout>
     </div>
   );
-}
+};
 
 export default App;
-
 
 /*
 

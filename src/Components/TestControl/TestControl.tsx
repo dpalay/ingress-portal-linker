@@ -14,7 +14,7 @@ const TestControl: React.FC<IProps> = (props: IProps)  => {
     
 
     return (<div>
-        <Button type="primary" title="clickme!" onClick={props.handleclick}>{props.text || "click me!"} </Button>
+        <Button className="ingress-button" type="primary" title="clickme!" onClick={props.handleclick}>{props.text || "click me!"} </Button>
     </div>
     )
 }
