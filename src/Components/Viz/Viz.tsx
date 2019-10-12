@@ -9,7 +9,7 @@ type IDirection = "East" | "West" | "North" | "South"
 interface IProps {
     whichAnchor: IDirection
     data?: { "guid": string; "title": string; "coordinates": { "lat": string; "lng": string; }; "link": { "intel": string; "gmap": string; }; "image": string; }[]
-    value?: {count: number}[]
+    valueOfSlider: number
 }
 
 const Viz: React.FC<IProps> = (props: IProps)  => {
@@ -30,10 +30,17 @@ const Viz: React.FC<IProps> = (props: IProps)  => {
 
     useEffect(() => {
         if (props.data && d3Container.current) {
-            let val = (props.value && props.value[0] && props.value[0].count) || 0
+            let val = props.valueOfSlider
             const svg = d3.select(d3Container.current);
             //@ts-ignore
             const height = 800
+            const width = 1200
+            const margin = {
+                top: 50,
+                bottom: 50,
+                left: 50,
+                right: 50
+            }
             // set width/height of SVG
             svg.attr('width', width).attr('height',height)
             
@@ -52,9 +59,9 @@ const Viz: React.FC<IProps> = (props: IProps)  => {
 
             //setup ranges
             //@ts-ignore
-            let x = d3.scaleLinear().domain(d3.extent(portalDataset, d => d.x)).range([0,width])
+            let x = d3.scaleLinear().domain(d3.extent(portalDataset, d => d.x)).range([margin.left,width-margin.right])
             //@ts-ignore
-            let y = d3.scaleLinear().domain(d3.extent(portalDataset, d => d.y)).range([height,0])
+            let y = d3.scaleLinear().domain(d3.extent(portalDataset, d => d.y)).range([height-margin.bottom,margin.top])
             
             const update = svg.selectAll("g.circleContainer").data(data)
             
@@ -86,9 +93,9 @@ const Viz: React.FC<IProps> = (props: IProps)  => {
             .attr("r", 0)
             .transition()
             .duration(500)
-            .delay((d,i) => i*50)
+            .delay((d,i) => i*20)
             .attr("r",10)
-            update_group_with_data.append("text").text(d=>d) 
+            update_group_with_data.append("text").text(d=>d.title) 
             //@ts-ignore
             // the merge returns the g, not the circle
             update_enter.merge(update)
@@ -96,7 +103,7 @@ const Viz: React.FC<IProps> = (props: IProps)  => {
             //.attr("r", Math.random()*15 + 5)
     
     }
-}, [props.data, props.value, d3Container.current])
+}, [props.data, props.valueOfSlider, d3Container.current, props.whichAnchor])
     return (<div className="viz" ref={ref}>
         <svg className="d3-component ingress-frame" ref={d3Container}/>
     </div>)

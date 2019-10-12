@@ -6,34 +6,34 @@ import myClickFunction from "../../Utils/events";
 import Viz from "../Viz/Viz";
 import TestControl from "../TestControl/TestControl";
 import AnchorSelect from "../AnchorSelect/AnchorSelect";
-import rawPortals from '../../Utils/Data/data'
+import rawPortals from "../../Utils/Data/data";
 
+type IDirection = "East" | "West" | "North" | "South";
 
-type IDirection = "East" | "West" | "North" | "South"
-
-
-const directionDefault: IDirection = "West"
+const directionDefault: IDirection = "West";
 const { Header, Footer, Content, Sider } = Layout;
 
-const initialState = { count: 3 };
+const initialCount = 3;
 
 const handleClickReducer = (
-  state: { count: number },
+  count:  number,
   action: { type: string }
 ) => {
   switch (action.type) {
     case "increment":
-      return { count: Math.min(rawPortals.length, state.count + 1) };
+      return  Math.min(rawPortals.length, count + 1) ;
     case "decrement":
-      return { count: Math.max(0, state.count - 1) };
+      return  Math.max(0, count - 1) ;
     default:
       throw new Error();
   }
 };
 
 const App: React.FC = () => {
-  const [value, dispatch] = useReducer(handleClickReducer, initialState);
-  const [whichAnchor, setWhichAnchor] = useState(directionDefault as IDirection)
+  const [value, dispatch] = useReducer(handleClickReducer, initialCount);
+  const [whichAnchor, setWhichAnchor] = useState(
+    directionDefault as IDirection
+  );
 
   return (
     <div>
@@ -54,23 +54,26 @@ const App: React.FC = () => {
               <Col>
                 <TestControl
                   text="Add a ball"
-                  value={value.count}
+                  value={value}
                   handleclick={() => dispatch({ type: "increment" })}
                 />
               </Col>
               <Col>
                 <TestControl
                   text="Remove a ball"
-                  value={value.count}
+                  value={value}
                   handleclick={() => dispatch({ type: "decrement" })}
                 />
               </Col>
             </Row>
             <Row type="flex">
               <Col span={24}>
-              <Viz data={rawPortals} value={[value]} />
-              </Col> 
-                <Viz data={value} whichAnchor={whichAnchor} />
+                <Viz
+                  data={rawPortals}
+                  valueOfSlider={value}
+                  whichAnchor={whichAnchor}
+                />
+              </Col>
             </Row>
           </Content>
         </Layout>

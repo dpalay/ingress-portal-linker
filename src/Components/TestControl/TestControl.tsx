@@ -2,7 +2,6 @@ import React from 'react';
 import Button from 'antd/es/button';
 
 interface IProps {
-    data?: {}[]
     value?: number
     handleclick?: () => void
     text?: string
