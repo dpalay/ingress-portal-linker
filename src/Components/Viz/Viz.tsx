@@ -177,7 +177,7 @@ const Viz: React.FC<IProps> = (props: IProps) => {
         .duration(500)
         .delay((d, i) => i * 20)
         .attr("r", 10);
-      update_group_with_data.append("text").text(d => d.title);
+      //update_group_with_data.append("text").text(d => d.title);
       //@ts-ignore
       // the merge returns the g, not the circle
       update_enter.merge(update);
