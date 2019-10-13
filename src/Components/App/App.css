@@ -52,7 +52,7 @@ h2 {
     padding: 2px 15px;
 }
 
-.ingress-text{
+.ingress-text {
     color: #59fbea;
     font-family: coda_regular, arial, helvetica, sans-serif;
 }
@@ -93,20 +93,21 @@ h2 {
     color: #9627f4;
 }
 
-table.compass{
+table.compass {
     margin-top: 10px;
 }
-table.compass tbody tr{
+
+table.compass tbody tr {
     height: 50px;
     width: 150px;
     text-align: center;
 }
 
-table.compass tbody tr td{
+table.compass tbody tr td {
     width: 50px;
 }
 
-td.selector{
+.selector {
     cursor: pointer;
     background-color: #004746;
     border: 1px solid #0ff;

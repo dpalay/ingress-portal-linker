@@ -7,6 +7,7 @@ import Viz from "../Viz/Viz";
 import TestControl from "../TestControl/TestControl";
 import AnchorSelect from "../AnchorSelect/AnchorSelect";
 import rawPortals from "../../Utils/Data/data";
+import PortalInput from "../PortalInput/PortalInput";
 
 type IDirection = "East" | "West" | "North" | "South";
 
@@ -34,6 +35,7 @@ const App: React.FC = () => {
   const [whichAnchor, setWhichAnchor] = useState(
     directionDefault as IDirection
   );
+  const [portalList, setPortalList] = useState("")
 
   return (
     <div>
@@ -47,6 +49,12 @@ const App: React.FC = () => {
               <Col span={20}>
                 <AnchorSelect which={whichAnchor} setWhich={setWhichAnchor} />
               </Col>
+            </Row>
+            <Row type="flex" justify="center">
+            <Col span={20}>
+              <PortalInput portalList="" setPortalList={() => {}}></PortalInput>
+
+            </Col>
             </Row>
           </Sider>
           <Content className="ingress-frame dark-back">
