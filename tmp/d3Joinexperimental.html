@@ -1,0 +1,205 @@
+<html>
+
+<head>
+    <title>d3 experiment</title>
+    <script src="https://d3js.org/d3.v5.js"></script>
+
+    <style type="text/css">
+        .box {
+            background-color: #DFDFDF;
+            padding: 4px;
+            margin: 1px;
+        }
+        
+        .voronoi {
+            pointer-events: all;
+            stroke: black;
+            fill: none;
+        }
+    </style>
+</head>
+
+<body>
+    <input type="button" id="theButton" name="button" title="click me" />
+    <table>
+        <tbody>
+            <tr>
+                <td>Added</td>
+                <td>Updated</td>
+                <td>Removed</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+<script>
+    const margin = {
+        top: 50,
+        bottom: 50,
+        left: 50,
+        right: 50
+    };
+
+    let allPoints = [
+        [-89.569103, 42.995943],
+        [-89.569758, 42.995532],
+        [-89.569621, 42.996072],
+        [-89.5657, 42.998635],
+        [-89.564901, 42.997864],
+        [-89.566257, 42.995856],
+        [-89.567225, 42.994912],
+        [-89.565785, 42.995881],
+        [-89.565508, 42.997852],
+        [-89.569724, 42.995143],
+        [-89.565262, 42.997146],
+        [-89.568037, 42.997133],
+        [-89.57054, 42.995986],
+        [-89.569102, 42.996995],
+        [-89.567432, 42.996479],
+        [-89.568366, 42.996103],
+        [-89.566108, 42.997496],
+        [-89.570154, 42.995998],
+        [-89.566992, 42.995231],
+        [-89.565536, 42.997231],
+        [-89.565131, 42.996781],
+        [-89.565201, 42.996472],
+        [-89.564698, 42.998863],
+        [-89.568466, 42.998184],
+        [-89.564673, 42.996888],
+        [-89.569409, 42.995962],
+        [-89.565594, 42.995005],
+        [-89.56867, 42.996497],
+        [-89.565919, 42.996964],
+        [-89.569651, 42.995886],
+        [-89.568596, 42.995072],
+        [-89.56933, 42.99514],
+        [-89.566588, 42.997634],
+        [-89.567764, 43.002593],
+        [-89.570146, 42.996317],
+        [-89.565292, 42.997669],
+        [-89.566266, 42.998597],
+        [-89.565897, 42.996519],
+        [-89.564967, 42.996379],
+        [-89.569699, 42.996638],
+        [-89.56886, 42.995512],
+        [-89.562467, 42.998369],
+        [-89.567628, 42.996026],
+        [-89.565186, 42.996648],
+        [-89.568974, 42.996598],
+        [-89.568473, 42.999466],
+        [-89.568716, 42.996085],
+        [-89.569441, 42.995326],
+        [-89.568164, 42.995765],
+        [-89.568595, 42.997917],
+        [-89.565122, 42.99984],
+        [-89.566144, 42.995362],
+        [-89.565362, 42.997504],
+        [-89.567381, 42.992872],
+        [-89.565353, 42.992042],
+        [-89.56604, 42.990802],
+        [-89.566436, 42.993172],
+        [-89.567948, 42.992859],
+        [-89.567025, 42.992355],
+        [-89.565587, 42.991195],
+        [-89.566019, 42.993419],
+        [-89.567351, 42.991544],
+        [-89.566659, 42.9946],
+        [-89.566302, 42.992908],
+        [-89.56546, 42.993679],
+        [-89.56782, 42.993485],
+        [-89.566958, 42.99331],
+        [-89.567229, 42.993188],
+        [-89.566022, 42.990432],
+        [-89.567113, 42.9929],
+        [-89.56691, 42.99445],
+        [-89.566527, 42.994132],
+        [-89.566982, 42.991443],
+        [-89.566211, 42.99452],
+        [-89.56678, 42.993642],
+        [-89.565765, 42.993156],
+        [-89.567185, 42.994715],
+        [-89.565126, 42.994539],
+        [-89.566516, 42.993797],
+        [-89.566927, 42.994786],
+        [-89.567265, 42.991074],
+        [-89.570148, 42.989966],
+        [-89.567421, 42.994175],
+        [-89.566132, 42.993806],
+        [-89.565546, 42.994605],
+        [-89.566368, 42.994723],
+        [-89.566729, 42.988127],
+        [-89.565925, 42.994598],
+        [-89.566251, 42.992709]
+    ]
+
+    function randomPoints(setOfPoints) {
+        return setOfPoints.map((point, i) => [...point, i]).filter(point => Math.random() < .4)
+    }
+
+    d3.select("#theButton").on("click", (d, i, arr) => {
+        draw()
+    })
+
+
+    let stickyPoint = [0, 0]
+    let x = d3.scaleLinear().domain(d3.extent(allPoints, d => d[0])).range([margin.left, 400 - margin.right])
+    let y = d3.scaleLinear().domain(d3.extent(allPoints, d => d[1])).range([400 - margin.top, margin.bottom])
+
+    let svg = d3.select("body").append("svg").attr("width", 400).attr("height", 400).attr("class", "box");
+
+    const t = svg.transition()
+        .duration(2250);
+    let gpoints = svg.append("g").attr("id", "GPoints");
+
+
+
+    function draw() {
+        console.log("drawing!")
+        console.log(randomPoints(allPoints))
+        let points = randomPoints(allPoints);
+        gpoints.selectAll("g.circleGroup").data(randomPoints(allPoints), d => d[2])
+            .join(
+                // New "g.circleGroup" coming in 
+                enter => {
+                    console.log(enter.nodes())
+                    let circleGroup = enter.append("g").classed("circleGroup", true)
+                    circleGroup.append("circle").attr("r", 0).attr("cx", d => x(d[0]))
+                        .attr("cy", d => y(d[1]))
+                        .attr("pointer-events", "none")
+                        .call(enter => {
+                            enter.transition().attr("r", 2)
+                            console.log(enter)
+                        });
+                },
+                // Existing "g.circleGroups" with changed data
+                update => {
+                    console.log(update.nodes())
+                    update.call(update => update.selectAll("circle").transition(t).attr("r", 7).transition(t).attr("r", 2))
+                },
+                // "g.circleGroups" that are leaving
+                exit => {
+                    console.log(exit.nodes())
+                    exit.call(exit => exit.selectAll("circle").transition(t).attr("r", 80))
+                    exit.call(exit => exit.transition().remove())
+                }
+            )
+
+
+    }
+
+
+
+
+
+
+    let tmp = {}
+
+    /*
+
+    const points = [ [ 1, 1 ], [ 2, 2 ], [ 3, 3 ], [ 1, 3 ], [ 3, 1 ] ]
+    const delaun = Delaunay.Delaunay.from(points)
+    const voro = delaun.voronoi([0,0,4,4])
+    voro.renderCell(0,t) gets polygon string
+    */
+</script>
+
+</html>

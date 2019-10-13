@@ -1,0 +1,119 @@
+<html>
+
+<head>
+    <title>d3 experiment</title>
+    <script src="https://d3js.org/d3.v5.js"></script>
+
+    <style type="text/css">
+        .box {
+            background-color: #DFDFDF;
+            padding: 4px;
+            margin: 1px;
+        }
+        
+        .voronoi {
+            pointer-events: all;
+            stroke: black;
+            fill: none;
+        }
+    </style>
+</head>
+
+<body>
+</body>
+<script>
+    let points = [
+        [1, 1],
+        [2, 2],
+        [3, 3],
+        [1, 3],
+        [3, 1]
+    ]
+    let polygons = [
+        [
+            [0, 0],
+            [2, 0],
+            [2, 1],
+            [1, 2],
+            [0, 2],
+            [0, 0]
+        ],
+        [
+            [1, 2],
+            [2, 1],
+            [3, 2],
+            [2, 3],
+            [1, 2]
+        ],
+        [
+            [4, 4],
+            [2, 4],
+            [2, 3],
+            [3, 2],
+            [4, 2],
+            [4, 4]
+        ],
+        [
+            [0, 4],
+            [0, 2],
+            [1, 2],
+            [2, 3],
+            [2, 4],
+            [0, 4]
+        ],
+        [
+            [4, 0],
+            [4, 2],
+            [3, 2],
+            [2, 1],
+            [2, 0],
+            [4, 0]
+        ]
+    ]
+
+    let stickyPoint = [0, 0]
+    let x = d3.scaleLinear().domain([0, 4]).range([0, 400])
+    let y = d3.scaleLinear().domain([0, 4]).range([400, 0])
+    let voroF = d3.voronoi().x(d => x(d[0])).y(d => y(d[1]))
+
+    let voroStr = (v) => {
+        let tmpstr = []
+        let translationContext = {}
+        translationContext.moveTo = (pointX, pointY) => tmpstr.push(`M${x(xc)},${y(yc)}`)
+        translationContext.lineTo = (pointX, pointY) => tmpstr.push(`L${x(xc)},${y(yc)}`)
+        v.render(translationContext)
+        return tmpstr
+    }
+
+    let svg = d3.select("body").append("svg").attr("width", 400).attr("height", 400).attr("class", "box")
+    let gpoints = svg.append("g").attr("id", "GPoints")
+    gpoints.selectAll("circle").data(points).enter().append("circle").attr("r", 2).attr("cx", d => x(d[0])).attr("cy", d => y(d[1])).attr("pointer-events", "none")
+
+    let tmp = {}
+
+    let gpoly = svg.append("g").attr("id", "GPoly")
+    gpoly.selectAll("polygon").data(polygons).enter().append("polygon")
+        .attr("points", d => d.map(point => [x(point[0]), y(point[1])]).join(" ")).attr("style", (d, i) => `fill: black; opacity: ${.05}; stroke: black`).on("mouseover", (d, i, arr) => {
+            console.log(d3.event)
+            tmp = arr[i];
+            console.log(i);
+            d3.select(arr[i]).transition().duration(300).attr("style", () => `fill: blue; opacity: ${.2}; stroke: black`)
+        })
+        .on("mouseout", (d, i, arr) => {
+            tmp = arr[i];
+            console.log(i);
+            d3.select(arr[i]).transition().duration(300).attr("style", () => `fill: black; opacity: ${.05}; stroke: black`)
+        })
+        /*console.log(d); console.log(arr)*/
+        /*console.log(d); console.log(arr)*/
+
+    /*
+
+    const points = [ [ 1, 1 ], [ 2, 2 ], [ 3, 3 ], [ 1, 3 ], [ 3, 1 ] ]
+    const delaun = Delaunay.Delaunay.from(points)
+    const voro = delaun.voronoi([0,0,4,4])
+    voro.renderCell(0,t) gets polygon string
+    */
+</script>
+
+</html>
