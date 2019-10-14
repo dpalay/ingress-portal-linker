@@ -20,16 +20,8 @@
 </head>
 
 <body>
-    <input type="button" id="theButton" name="button" title="click me" />
-    <table>
-        <tbody>
-            <tr>
-                <td>Added</td>
-                <td>Updated</td>
-                <td>Removed</td>
-            </tr>
-        </tbody>
-    </table>
+    <div><input type="button" id="theButton" name="button" value="click me" /></div>
+
 </body>
 <script>
     const margin = {
@@ -131,8 +123,37 @@
         [-89.566251, 42.992709]
     ]
 
+
+    /* heart
+    let allPoints = [
+        [4, 0],
+        [3, 1],
+        [2, 2],
+        [1, 3],
+        [.5, 4],
+        [0, 5],
+        [0, 6],
+        [1, 7],
+        [2, 7],
+        [3, 6],
+        [4, 5],
+        [5, 6],
+        [6, 7],
+        [7, 7],
+        [8, 6],
+        [8, 5],
+        [7.5, 4],
+        [7, 3],
+        [6, 2],
+        [5, 1],
+
+    ]
+    */
+    let counter = 0
+
     function randomPoints(setOfPoints) {
-        return setOfPoints.map((point, i) => [...point, i]).filter(point => Math.random() < .4)
+        counter++
+        return setOfPoints.map((point, i) => [...point, i]).filter((point, i) => i < counter)
     }
 
     d3.select("#theButton").on("click", (d, i, arr) => {
@@ -153,17 +174,19 @@
 
 
     function draw() {
-        console.log("drawing!")
-        console.log(randomPoints(allPoints))
         let points = randomPoints(allPoints);
-        gpoints.selectAll("g.circleGroup").data(randomPoints(allPoints), d => d[2])
+        let x = d3.scaleLinear().domain(d3.extent(points, d => d[0])).range([margin.left, 400 - margin.right])
+        let y = d3.scaleLinear().domain(d3.extent(points, d => d[1])).range([400 - margin.top, margin.bottom])
+
+        gpoints.selectAll("g.circleGroup").data(points, d => d[2])
             .join(
                 // New "g.circleGroup" coming in 
                 enter => {
-                    console.log(enter.nodes())
                     let circleGroup = enter.append("g").classed("circleGroup", true)
-                    circleGroup.append("circle").attr("r", 0).attr("cx", d => x(d[0]))
-                        .attr("cy", d => y(d[1]))
+                    circleGroup.attr("transform", "translate(200,200)").transition(t).attr("transform", (d, i, arr) => {
+                        return `translate(${x(d[0])}, ${y(d[1])})`
+                    })
+                    circleGroup.append("circle").attr("r", 0)
                         .attr("pointer-events", "none")
                         .call(enter => {
                             enter.transition().attr("r", 2)
@@ -173,18 +196,25 @@
                 // Existing "g.circleGroups" with changed data
                 update => {
                     console.log(update.nodes())
-                    update.call(update => update.selectAll("circle").transition(t).attr("r", 7).transition(t).attr("r", 2))
+                    update.call(update => {
+                        update.transition(t).attr("transform", (d, i, arr) => {
+                            return `translate(${x(d[0])}, ${y(d[1])})`
+                        })
+
+                        //update.selectAll("circle").transition(t).attr("r", 7).transition(t).attr("r", 2)
+                    })
                 },
                 // "g.circleGroups" that are leaving
                 exit => {
                     console.log(exit.nodes())
-                    exit.call(exit => exit.selectAll("circle").transition(t).attr("r", 80))
+                    exit.call(exit => exit.selectAll("circle").transition(t).attr("r", 0))
                     exit.call(exit => exit.transition().remove())
                 }
             )
 
-
     }
+
+
 
 
 
