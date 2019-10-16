@@ -1,6 +1,5 @@
 import React, { useState, useReducer } from "react";
-import Layout from "antd/es/layout";
-import { Row, Col } from "antd/es/grid";
+import { Row, Col, Layout } from "antd";
 import "./App.css";
 import myClickFunction from "../../Utils/events";
 import Viz from "../Viz/Viz";
@@ -8,8 +7,7 @@ import TestControl from "../TestControl/TestControl";
 import AnchorSelect from "../AnchorSelect/AnchorSelect";
 import rawPortals from "../../Utils/Data/data";
 import PortalInput from "../PortalInput/PortalInput";
-
-type IDirection = "East" | "West" | "North" | "South";
+import {IDirection} from "../../Utils/Types/myTypes"
 
 const directionDefault: IDirection = "West";
 const { Header, Footer, Content, Sider } = Layout;
