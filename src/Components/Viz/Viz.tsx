@@ -1,8 +1,13 @@
 import React, { useEffect, useRef } from "react";
 import {NodeGroup} from 'react-move'
 import "./Viz.css";
+import * as scale from 'd3-scale'
+import * as array from 'd3-array'
 import { Delaunay } from "d3-delaunay";
 import { IDirection } from "../../Utils/Types/myTypes";
+import { useWindowWidth } from "../../Utils/hooks";
+import Surface from "../../Utils/Objects/Surface";
+import data from "../../Utils/Data/data";
 
 
 
@@ -24,19 +29,34 @@ const Viz: React.FC<IProps> = (props: IProps) => {
        passes. In this case it will hold our component's SVG DOM element. It's
        initialized null and React will assign it later (see the return statement) */
 
-
-  const portalDataset = (props.data &&
-    props.data.map(datum => {
-      return {
-        x: +datum.coordinates.lng,
-        y: +datum.coordinates.lat,
-        title: datum.title
-      };
-    })) || [{ x: 0, y: 0, title: "null" }];
-
-  return (
+       const width = useWindowWidth(); // Our custom Hook
+       const portalDataset = (props.data &&
+        props.data.map(datum => {
+          return {
+            x: +datum.coordinates.lng,
+            y: +datum.coordinates.lat,
+            title: datum.title
+          };
+        })) || [{ x: 0, y: 0, title: "null" }];
+        const [(xmin: number),(xmax: number)] = array.extent(portalDataset, d=> d.x) || [0,100]
+        const x = scale.scaleLinear().domain([xmin, xmax])
+        
+        return (
     <div className="viz">
-      <svg className="d3-component ingress-frame"  />
+      <Surface 
+      className={"viz ingress-frame"}
+      view={{height: 800, width: 300}}
+      trbl={{top: 10, bottom: 10, left: 10, right: 10}}
+      style={{}}
+      >
+        {portalDataset.map(portal => {
+          
+          return (
+            <g className="circleGroup" transform={`translate(${portal.x})`}></g>
+          )
+        })}
+      </Surface>
+      
     </div>
   );
 };
