@@ -50,7 +50,7 @@ const App: React.FC = () => {
             </Row>
             <Row type="flex" justify="center">
             <Col span={20}>
-              <PortalInput portalList="" setPortalList={() => {}}></PortalInput>
+              <PortalInput portalList={portalList} setPortalList={() => setPortalList}></PortalInput>
 
             </Col>
             </Row>

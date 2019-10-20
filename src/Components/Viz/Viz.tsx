@@ -8,7 +8,8 @@ import { IDirection } from "../../Utils/Types/myTypes";
 import { useWindowWidth } from "../../Utils/hooks";
 import Surface from "../../Utils/Objects/Surface";
 import data from "../../Utils/Data/data";
-
+import { duration } from "moment";
+import Constants from '../../Utils/constants'
 
 
 
@@ -23,6 +24,9 @@ interface IProps {
   }[];
   valueOfSlider: number;
 }
+const {TRBL, VIEW} = Constants
+type iTrbl = typeof TRBL
+type iView = typeof VIEW
 
 const Viz: React.FC<IProps> = (props: IProps) => {
   /* The useRef Hook creates a variable that "holds on" to a value across rendering
@@ -38,23 +42,53 @@ const Viz: React.FC<IProps> = (props: IProps) => {
             title: datum.title
           };
         })) || [{ x: 0, y: 0, title: "null" }];
-        const [(xmin: number),(xmax: number)] = array.extent(portalDataset, d=> d.x) || [0,100]
-        const x = scale.scaleLinear().domain([xmin, xmax])
+        const [xmin,xmax] = array.extent(portalDataset, d=> d.x) || [0,100]
+        const [ymin,ymax] = array.extent(portalDataset, d=> d.y) || [0,100]
+        //@ts-ignore
+        const x = scale.scaleLinear().domain([xmin, xmax]).range([TRBL.left,VIEW.width-TRBL.right])
+        //@ts-ignore
+        const y = scale.scaleLinear().domain([ymin, ymax]).range([VIEW.height-TRBL.top,TRBL.bottom])
         
         return (
     <div className="viz">
       <Surface 
       className={"viz ingress-frame"}
-      view={{height: 800, width: 300}}
-      trbl={{top: 10, bottom: 10, left: 10, right: 10}}
+      view={VIEW}
+      trbl={TRBL}
       style={{}}
       >
-        {portalDataset.map(portal => {
-          
-          return (
-            <g className="circleGroup" transform={`translate(${portal.x})`}></g>
-          )
+        <NodeGroup
+        data={portalDataset}
+        keyAccessor = { d => d.title}
+        start={() => ({
+          opacity: 1e-6,
+          x:400,
+          y:400
         })}
+
+        enter={ (d) => ({
+          opacity: [0.7],
+          x: x(d.x),
+          y: y(d.y),
+          timing: {duration: 750}
+        })
+        }>
+          {(nodes) => {
+             //console.log(nodes)
+            return (
+            <g style={{fill: "white"}}>
+             {nodes.map((d,i,arr) => {
+               console.log(d)
+               console.log(i)
+               console.log(arr)
+               return (
+                 <circle r={4} cx={x(d.data.x)} cy={y(d.data.y)}></circle>
+               )
+             })}
+            </g>
+          )}}
+        
+        </NodeGroup>
       </Surface>
       
     </div>

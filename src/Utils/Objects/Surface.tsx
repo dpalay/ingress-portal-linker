@@ -1,11 +1,14 @@
 import React from 'react'
+import Constants from '../../Utils/constants'
 
+const {TRBL} = Constants
+type ITrbl = typeof TRBL
 
 type IProp = {
     children?: React.ReactChildren| React.ReactNode,
     className: string,
     style: {}
-    trbl: {top:number, right: number, bottom: number, left: number},
+    trbl: ITrbl,
     view: {width: string | number, height: string | number}
 }
 
@@ -38,13 +41,8 @@ export default function Surface(props: IProp) {
           top: 0,
         }}
       >
-        <g transform={`translate(${trbl.left} ,${trbl.top})`}>{children}</g>
+        <g>{children}</g>
       </svg>
     </div>
   )
-}
-
-Surface.defaultProps = {
-  view: [1000, 350],
-  trbl: [10, 10, 10, 10],
 }
