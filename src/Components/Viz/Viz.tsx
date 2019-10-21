@@ -10,6 +10,7 @@ import Surface from "../../Utils/Objects/Surface";
 import data from "../../Utils/Data/data";
 import { duration } from "moment";
 import Constants from '../../Utils/constants'
+import { easeQuadInOut, interpolateTransformSvg, interpolate } from "d3";
 
 
 
@@ -58,21 +59,37 @@ const Viz: React.FC<IProps> = (props: IProps) => {
       style={{}}
       >
         <NodeGroup
-        data={portalDataset}
+        data={portalDataset.slice(0,props.valueOfSlider)}
         keyAccessor = { d => d.title}
         start={() => ({
           opacity: 1e-6,
-          x:400,
-          y:400
+          x:VIEW.width/2,
+          y:VIEW.height/2
         })}
 
         enter={ (d) => ({
-          opacity: [0.7],
+          opacity: [0.4],
           x: x(d.x),
           y: y(d.y),
-          timing: {duration: 750}
-        })
-        }>
+          timing: {delay: 200, duration: 750, ease: easeQuadInOut}
+        })}
+
+        update={
+          (d,i) => ({
+            opacity: 1,
+            color: "#EE6600"
+          })
+        }
+
+        interpolation={(begValue, endValue, attr) => {
+          if (attr === 'transform') {
+            return interpolateTransformSvg(begValue, endValue)
+          }
+
+          return interpolate(begValue, endValue)
+        }}
+        
+        >
           {(nodes) => {
              //console.log(nodes)
             return (
