@@ -1,16 +1,11 @@
-import React, { useEffect, useRef } from "react";
+import React, { useState } from "react";
 import {NodeGroup} from 'react-move'
 import "./Viz.css";
-import * as scale from 'd3-scale'
-import * as array from 'd3-array'
-import { Delaunay } from "d3-delaunay";
 import { IDirection } from "../../Utils/Types/myTypes";
 import { useWindowWidth } from "../../Utils/hooks";
 import Surface from "../../Utils/Objects/Surface";
-import data from "../../Utils/Data/data";
-import { duration } from "moment";
 import Constants from '../../Utils/constants'
-import { easeQuadInOut, interpolateTransformSvg, interpolate } from "d3";
+import { easeQuadInOut, interpolateTransformSvg, interpolate, interpolateRainbow, extent, scaleLinear } from "d3";
 
 
 
@@ -35,6 +30,7 @@ const Viz: React.FC<IProps> = (props: IProps) => {
        initialized null and React will assign it later (see the return statement) */
 
        const width = useWindowWidth(); // Our custom Hook
+       const [vizState, setVizState ] = useState([]);
        const portalDataset = (props.data &&
         props.data.map(datum => {
           return {
@@ -43,12 +39,12 @@ const Viz: React.FC<IProps> = (props: IProps) => {
             title: datum.title
           };
         })) || [{ x: 0, y: 0, title: "null" }];
-        const [xmin,xmax] = array.extent(portalDataset, d=> d.x) || [0,100]
-        const [ymin,ymax] = array.extent(portalDataset, d=> d.y) || [0,100]
+        const [xmin,xmax] = extent(portalDataset, d=> d.x) || [0,100]
+        const [ymin,ymax] = extent(portalDataset, d=> d.y) || [0,100]
         //@ts-ignore
-        const x = scale.scaleLinear().domain([xmin, xmax]).range([TRBL.left,VIEW.width-TRBL.right])
+        const x = scaleLinear().domain([xmin, xmax]).range([TRBL.left,VIEW.width-TRBL.right])
         //@ts-ignore
-        const y = scale.scaleLinear().domain([ymin, ymax]).range([VIEW.height-TRBL.top,TRBL.bottom])
+        const y = scaleLinear().domain([ymin, ymax]).range([VIEW.height-TRBL.top,TRBL.bottom])
         
         return (
     <div className="viz">
@@ -67,18 +63,23 @@ const Viz: React.FC<IProps> = (props: IProps) => {
           y:VIEW.height/2
         })}
 
-        enter={ (d) => ({
+        enter={ (d,i) =>{
+          console.log("enter" + i)
+          return  ({
           opacity: [0.4],
           x: x(d.x),
           y: y(d.y),
-          timing: {delay: 200, duration: 750, ease: easeQuadInOut}
-        })}
+          color: [interpolateRainbow((i + 1) / (props.valueOfSlider + 1))],
+          timing: {delay: 200, duration: 750, ease: easeQuadInOut},
+          fill: interpolateRainbow((i + 1) / (props.valueOfSlider + 1))
+        })}}
 
         update={
-          (d,i) => ({
+          (d,i) => { console.log('update' + i)
+            return ({
             opacity: 1,
-            color: "#EE6600"
-          })
+            
+          })}
         }
 
         interpolation={(begValue, endValue, attr) => {
@@ -99,7 +100,7 @@ const Viz: React.FC<IProps> = (props: IProps) => {
                console.log(i)
                console.log(arr)
                return (
-                 <circle r={4} cx={x(d.data.x)} cy={y(d.data.y)}></circle>
+                 <circle key={i} r={4} cx={x(d.data.x)} cy={y(d.data.y)}></circle>
                )
              })}
             </g>
