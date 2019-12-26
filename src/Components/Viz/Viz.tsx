@@ -3,7 +3,6 @@ import "./Viz.css";
 import * as d3 from "d3";
 //@ts-ignore
 import useDimensions from "react-use-dimensions";
-import { appendFile } from "fs";
 import { Delaunay } from "d3-delaunay";
 
 type IDirection = "East" | "West" | "North" | "South";
@@ -18,14 +17,13 @@ interface IProps {
   }[];
   valueOfSlider: number;
 }
+let idealHeight = document.documentElement.clientHeight - 102 - 100
 
 const Viz: React.FC<IProps> = (props: IProps) => {
   /* The useRef Hook creates a variable that "holds on" to a value across rendering
        passes. In this case it will hold our component's SVG DOM element. It's
        initialized null and React will assign it later (see the return statement) */
-  const d3Container = useRef(null);
-  const [ref, { x, y, width, height }] = useDimensions();
-
+  const svgRef = useRef<SVGSVGElement>(null);
   const portalDataset = (props.data &&
     props.data.map(datum => {
       return {
@@ -34,26 +32,106 @@ const Viz: React.FC<IProps> = (props: IProps) => {
         title: datum.title
       };
     })) || [{ x: 0, y: 0, title: "null" }];
-
+    
   useEffect(() => {
-    if (props.data && d3Container.current) {
+
+    idealHeight = window.innerHeight - 102 - 100
+    if (props.data && svgRef.current) {
       let val = props.valueOfSlider;
-      const svg = d3.select(d3Container.current);
-      //@ts-ignore
-      const height = 800;
-      const width = 1200;
+      const svg = d3.select(svgRef.current)
+      //const height = 800;
+      //const width = 1200;
       const margin = {
         top: 50,
         bottom: 50,
         left: 50,
         right: 50
       };
-      // set width/height of SVG
-      svg.attr("width", width).attr("height", height);
+      // set height of SVG
+      svg.attr("height", idealHeight);
 
       /**
        * DEBUG INFO
        */
+      svg.selectAll("g.debug").data([1]).enter()
+        .append("g")
+        .attr("class", "debug")
+        .classed("level_2", true)
+        .attr("transform", `translate(${svgRef.current.clientWidth / 2},${idealHeight / 2})`)
+        .append("text")
+        .style("color", "white")
+        .style("background","white")
+        .text("debug")
+
+
+    }
+  }, [props.data, props.valueOfSlider, props.whichAnchor]);
+  return (
+    <>
+      <div className="viz">
+        <svg className="d3-component ingress-frame" ref={svgRef} style={{ marginLeft: "1%", width: "98%", height: idealHeight }} />
+      </div>
+      <div className="debug ingress-frame ingress-button">
+        props:
+      <ul>
+          <li>Which Anchor: {props.whichAnchor}</li>
+          <li>value of slider: {props.valueOfSlider}</li>
+          <li>Data
+          <ul>
+              {props.data && props.data.map(((d, i) => (<li key={i}> {i + 1}:{d.title}</li>)))}
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </>
+  );
+};
+
+/*
+//This works!!
+  if (props.data && d3Container.current) {
+            const svg = d3.select(d3Container.current);
+            // set width/height of SVG
+            svg.attr('width', 500).attr('height',500)
+            // get data from props
+            const data = d3.range(props.data[0].count)
+    
+            
+            const update = svg.selectAll("circle").data(data)
+            
+            // When removing an entry
+            update.exit().remove();
+
+            // update existing elements
+            update.attr("new", "false")
+            .transition()
+                .duration(500)
+                .ease(d3.easeQuadInOut)
+                .attr("transform", (datum, i , arr) => `translate(${(i+1) * 480/(arr.length+1)},200)`)
+                
+            
+
+            // Adding new elements
+            update.enter()
+            .append("circle")
+            .data(data)
+            .attr("r", 10)
+            .attr("new", "true")
+            .attr("transform", (datum, i , arr) => `translate(${(i+1) * 480/(arr.length+1)},200)`)
+            //@ts-ignore
+            .merge(update)
+    
+    }
+*/
+
+export default Viz;
+
+
+/*
+
+      /**
+       * DEBUG INFO
+       *
       svg.selectAll("g.debug").data([1]).enter()
         .append("g")
         .attr("class", "debug")
@@ -63,29 +141,29 @@ const Viz: React.FC<IProps> = (props: IProps) => {
 
       /**
        * Starting the Dataset for the circles
-       */
+       *
       // get data from props
       const data = portalDataset;
       //const data = portalDataset.slice(0,val)
 
 
-      
+
 
 
       //setup ranges
       let x = d3
-      .scaleLinear()
-      //@ts-ignore
+        .scaleLinear()
+        //@ts-ignore
         .domain(d3.extent(portalDataset, d => d.x))
         .range([margin.left, width - margin.right]);
-        let y = d3
+      let y = d3
         .scaleLinear()
         //@ts-ignore
         .domain(d3.extent(portalDataset, d => d.y))
         .range([height - margin.bottom, margin.top]);
 
 
-        // Start of Voronoi stuff
+      // Start of Voronoi stuff
       const delaunay = Delaunay.from(data.map(datum => [datum.x, datum.y]));
       const voronoi = delaunay.voronoi([-90, -180, 90, 180]);
       let polyGenerator = voronoi.cellPolygons();
@@ -100,14 +178,14 @@ const Viz: React.FC<IProps> = (props: IProps) => {
       polygons.pop()
 
       let gpoly = svg.selectAll("#GPoly").data([1]).enter().append("g").attr("id", "GPoly");
-      
+
       gpoly
         .selectAll("polygon")
         .data(polygons)
         .enter()
         .append("polygon")
         .attr("points", d =>
-        //@ts-ignore
+          //@ts-ignore
           d.map(point => [x(point[0]), y(point[1])]).join(" ")
         )
         .attr("style", (d, i) => `fill: black; opacity: ${0.05}; stroke: white`)
@@ -129,7 +207,7 @@ const Viz: React.FC<IProps> = (props: IProps) => {
             );
         });
 
-        // End of varonoi section
+      // End of varonoi section
 
 
 
@@ -183,50 +261,4 @@ const Viz: React.FC<IProps> = (props: IProps) => {
       update_enter.merge(update);
       // This should happen to both old and new
       //.attr("r", Math.random()*15 + 5)
-    }
-  }, [props.data, props.valueOfSlider, d3Container.current, props.whichAnchor]);
-  return (
-    <div className="viz" ref={ref}>
-      <svg className="d3-component ingress-frame" ref={d3Container} />
-    </div>
-  );
-};
-
-/*
-//This works!!
-  if (props.data && d3Container.current) {
-            const svg = d3.select(d3Container.current);
-            // set width/height of SVG
-            svg.attr('width', 500).attr('height',500)
-            // get data from props
-            const data = d3.range(props.data[0].count)
-    
-            
-            const update = svg.selectAll("circle").data(data)
-            
-            // When removing an entry
-            update.exit().remove();
-
-            // update existing elements
-            update.attr("new", "false")
-            .transition()
-                .duration(500)
-                .ease(d3.easeQuadInOut)
-                .attr("transform", (datum, i , arr) => `translate(${(i+1) * 480/(arr.length+1)},200)`)
-                
-            
-
-            // Adding new elements
-            update.enter()
-            .append("circle")
-            .data(data)
-            .attr("r", 10)
-            .attr("new", "true")
-            .attr("transform", (datum, i , arr) => `translate(${(i+1) * 480/(arr.length+1)},200)`)
-            //@ts-ignore
-            .merge(update)
-    
-    }
-*/
-
-export default Viz;
+      */
