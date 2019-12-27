@@ -6,6 +6,15 @@ html,
 body,
 .dark-back {
     background-color: #0b0c0d;
+    --l0: #333;
+    --l1: #fece5a;
+    --l2: #ffa630;
+    --l3: #ff7315;
+    --l4: #e40000;
+    --l5: #fd2992;
+    --l6: #eb26cd;
+    --l7: #c124e0;
+    --l8: #9627f4;
 }
 
 .App-logo {
@@ -58,39 +67,39 @@ h2 {
 }
 
 .level_0 {
-    color: #333;
+    color: var(--l0);
 }
 
 .level_1 {
-    color: #fece5a;
+    color: var(--l1);
 }
 
 .level_2 {
-    color: #ffa630;
+    color: var(--l2);
 }
 
 .level_3 {
-    color: #ff7315;
+    color: var(--l3);
 }
 
 .level_4 {
-    color: #e40000;
+    color: var(--l4);
 }
 
 .level_5 {
-    color: #fd2992;
+    color: var(--l5);
 }
 
 .level_6 {
-    color: #eb26cd;
+    color: var(--l6);
 }
 
 .level_7 {
-    color: #c124e0;
+    color: var(--l7);
 }
 
 .level_8 {
-    color: #9627f4;
+    color: var(--l8);
 }
 
 table.compass{

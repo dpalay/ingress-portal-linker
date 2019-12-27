@@ -1,6 +1,5 @@
 import React, { useState, useReducer } from "react";
-import Layout from "antd/es/layout";
-import { Row, Col } from "antd/es/grid";
+import {Row, Col, Layout} from 'antd'
 import "./App.css";
 import myClickFunction from "../../Utils/events";
 import Viz from "../Viz/Viz";
@@ -11,9 +10,9 @@ import rawPortals from "../../Utils/Data/data";
 type IDirection = "East" | "West" | "North" | "South";
 
 const directionDefault: IDirection = "West";
-const { Header, Footer, Content, Sider } = Layout;
+const { Header, Footer, Content } = Layout;
 
-const initialCount = 3;
+const initialCount = 100;
 
 const handleClickReducer = (
   count:  number,
@@ -42,15 +41,13 @@ const App: React.FC = () => {
           <h2>Dave's Portal Linker</h2>
         </Header>
         <Layout>
-          <Sider className="ingress-frame">
-            <Row type="flex" justify="center">
-              <Col span={20}>
+          <Content className="ingress-frame dark-back">
+          <Row type="flex">
+              <Col>
                 <AnchorSelect which={whichAnchor} setWhich={setWhichAnchor} />
               </Col>
-            </Row>
-          </Sider>
-          <Content className="ingress-frame dark-back">
-            <Row type="flex">
+              <Col span={1}>
+              </Col>
               <Col>
                 <TestControl
                   text="Add a ball"
@@ -65,9 +62,7 @@ const App: React.FC = () => {
                   handleclick={() => dispatch({ type: "decrement" })}
                 />
               </Col>
-            </Row>
-            <Row type="flex">
-              <Col span={24}>
+              <Col span={18}>
                 <Viz
                   data={rawPortals}
                   valueOfSlider={value}
