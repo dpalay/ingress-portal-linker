@@ -74,8 +74,8 @@ const Viz: React.FC<IProps> = (props: IProps) => {
       //const data = portalDataset.slice(0,val)
 
       // Typescript stuff
-      let xExtent = d3.extent(portalDataset, d => d.x);
-      let yExtent = d3.extent(portalDataset, d => d.y);
+      let xExtent = d3.extent(data, d => d.x);
+      let yExtent = d3.extent(data, d => d.y);
 
       //setup ranges
       let x = d3
@@ -96,6 +96,8 @@ const Viz: React.FC<IProps> = (props: IProps) => {
         let colorScale = d3
         // @ts-ignore
         .scaleLinear().domain([0, 1, 2, 3, 4, 5, 6, 7, 8]).range(["#333","#fece5a","#ffa630","#ff7315","#e40000","#fd2992","#eb26cd","#c124e0","#9627f4"]);
+        
+        
 
       svg.selectAll("line").remove();
       svg
@@ -122,7 +124,7 @@ const Viz: React.FC<IProps> = (props: IProps) => {
 
       circles
         .selectAll("circle")
-        .data(portalDataset)
+        .data(data)
         .join(
           enter =>
             enter
@@ -130,6 +132,7 @@ const Viz: React.FC<IProps> = (props: IProps) => {
               .attr("class", "new")
               .attr("r", 1)
               .attr("transform", `translate(${width / 2},${height / 2})`)
+              .style("fill", d => colorScale(gridScale(d.x)))
               .call(enter =>
                 enter
                   .transition()
@@ -137,7 +140,6 @@ const Viz: React.FC<IProps> = (props: IProps) => {
                   .duration(1500)
                   .attr("r", 5)
                   .attr("transform", (d, i) => `translate(${x(d.x)},${y(d.y)})`)
-                  .style("fill", d => colorScale(gridScale(d.x)))
               ),
           update =>
             update.attr("class", "updated").call(update =>
