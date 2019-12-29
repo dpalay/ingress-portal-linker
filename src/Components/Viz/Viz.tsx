@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import "./Viz.css";
 import * as d3 from "d3";
 import { Delaunay } from "d3-delaunay";
-import { useWindowSize } from "@react-hook/window-size"
+import { useWindowSize } from "@react-hook/window-size";
 import { Row, Col } from "antd";
 
 type IDirection = "East" | "West" | "North" | "South";
@@ -33,14 +33,14 @@ const Viz: React.FC<IProps> = (props: IProps) => {
         title: datum.title,
         key: i
       };
-    })) || [{ x: 0, y: 0, title: "null" , key: 0}];
+    })) || [{ x: 0, y: 0, title: "null", key: 0 }];
 
   useEffect(() => {
-    let height = h - 102 - 163
+    let height = h - 102;
     let width = (svgRef.current && svgRef.current.clientWidth) || w;
     if (props.data && svgRef.current) {
       let val = props.valueOfSlider;
-      const svg = d3.select(svgRef.current)
+      const svg = d3.select(svgRef.current);
       //const height = 800;
       //const width = 1200;
       const margin = {
@@ -55,74 +55,105 @@ const Viz: React.FC<IProps> = (props: IProps) => {
       /**
        * DEBUG INFO
        */
-      svg.selectAll("g.debug").remove()
-      svg.append("g")
+      svg.selectAll("g.debug").remove();
+      svg
+        .append("g")
         .attr("class", "debug")
-        .attr("transform", `translate(${svgRef.current.clientWidth / 2},${height / 2})`)
+        .attr(
+          "transform",
+          `translate(${svgRef.current.clientWidth / 2},${height / 2})`
+        )
         .append("text")
         .style("stroke", "var(--l8")
-        .text(`Screen M-L: ${margin.left}\nScreen W - M.r: ${width - margin.right}`)
-
+        .text(
+          `Screen M-L: ${margin.left}\nScreen W - M.r: ${width - margin.right}`
+        );
 
       // get data from props
-      const data = portalDataset
+      const data = portalDataset;
       //const data = portalDataset.slice(0,val)
 
-
-
       // Typescript stuff
-      let xExtent = (d3.extent(portalDataset, d => d.x))
-      let yExtent = d3.extent(portalDataset, d => d.y)
-
+      let xExtent = d3.extent(portalDataset, d => d.x);
+      let yExtent = d3.extent(portalDataset, d => d.y);
 
       //setup ranges
       let x = d3
         .scaleLinear()
-        .domain([(xExtent[0] || 0), (xExtent[1] || 1)])
+        .domain([xExtent[0] || 0, xExtent[1] || 1])
         //.domain([0, portalDataset.length])
         .range([margin.left, width - margin.right]);
       let y = d3
         .scaleLinear()
-        .domain([(yExtent[0] || 0), (yExtent[1] || 1)])
+        .domain([yExtent[0] || 0, yExtent[1] || 1])
         //.domain([0, 1])
         .range([height - margin.bottom, margin.top]);
 
       let gridScale = d3
-        .scaleLinear().domain([(xExtent[0] || 0), (xExtent[1] || 1)]).range([1, 8])
-      // @ts-ignore
-      let colorScale = d3.scaleLinear().domain([0, 1, 2, 3, 4, 5, 6, 7, 8]).range(["#333", "#fece5a", "#ffa630", "#ff7315", "#e40000", "#fd2992", "#eb26cd", "#c124e0", "#9627f4"])
+        .scaleLinear()
+        .domain([xExtent[0] || 0, xExtent[1] || 1])
+        .range([1, 8]);
+        let colorScale = d3
+        // @ts-ignore
+        .scaleLinear().domain([0, 1, 2, 3, 4, 5, 6, 7, 8]).range(["#333","#fece5a","#ffa630","#ff7315","#e40000","#fd2992","#eb26cd","#c124e0","#9627f4"]);
 
-      //      svg.selectAll("line").remove();
-      //      svg.append("line").attr("x1",x(0)).attr("y1",y(0)).attr("x2",x(1)).attr("y2",y(1)).style("stroke","white")
-      //      svg.append("line").attr("x1",x(0)).attr("y1",y(1)).attr("x2",x(1)).attr("y2",y(0)).style("stroke","white")
+      svg.selectAll("line").remove();
+      svg
+        .append("line")
+        .attr("x1", 0)
+        .attr("y1", 0)
+        .attr("x2", width)
+        .attr("y2", height)
+        .style("stroke", "white");
+      svg
+        .append("line")
+        .attr("x1", 0)
+        .attr("y1", height)
+        .attr("x2", width)
+        .attr("y2", 0)
+        .style("stroke", "white");
 
-      let circles = svg.selectAll("g#circles").data([1]).enter().append("g").attr("id","circles")
+      let circles = svg
+        .selectAll("g#circles")
+        .data([1])
+        .enter()
+        .append("g")
+        .attr("id", "circles");
 
-      circles.selectAll("circle").data(portalDataset).join(
-        enter => enter
-        .append("circle")
-        .attr("r", 1)
-        .attr("transform",`translate(${w/2},${h/2})`)
-        .call(
-          enter => enter
-            .transition()
-            .delay((d, i) => i * 10)
-            .duration(1500)
-            .attr("r", 5)
-            .attr("transform",(d,i) => `translate(${x(d.x)},${y(d.y)})`)
-            .style("fill", d => colorScale(gridScale(d.x)))),
-        update => update.attr("class", "updated").call(
-          update => update
-            .transition()
-            .duration(500)
-            .attr("r", 5)
-            .attr("transform",(d,i) => `translate(${x(d.x)},${y(d.y)})`)
-            .style("fill", d => colorScale(gridScale(d.x))))
-      )
+      circles
+        .selectAll("circle")
+        .data(portalDataset)
+        .join(
+          enter =>
+            enter
+              .append("circle")
+              .attr("class", "new")
+              .attr("r", 1)
+              .attr("transform", `translate(${width / 2},${height / 2})`)
+              .call(enter =>
+                enter
+                  .transition()
+                  .delay((d, i) => i * 10)
+                  .duration(1500)
+                  .attr("r", 5)
+                  .attr("transform", (d, i) => `translate(${x(d.x)},${y(d.y)})`)
+                  .style("fill", d => colorScale(gridScale(d.x)))
+              ),
+          update =>
+            update.attr("class", "updated").call(update =>
+              update
+                .transition()
+                .duration(500)
+                .attr("r", 5)
+                .attr("transform", (d, i) => `translate(${x(d.x)},${y(d.y)})`)
+                .style("fill", d => colorScale(gridScale(d.x)))
+            )
+        );
 
-      
       // Start of Voronoi stuff
-      const delaunay = Delaunay.from(data.map(datum => [x(datum.x), y(datum.y)]));
+      const delaunay = Delaunay.from(
+        data.map(datum => [x(datum.x), y(datum.y)])
+      );
       const voronoi = delaunay.voronoi([0, 0, width, height]);
       let polyGenerator = voronoi.cellPolygons();
 
@@ -133,9 +164,14 @@ const Viz: React.FC<IProps> = (props: IProps) => {
         polygons.push(polygon.value);
         isRunning = !polygon.done;
       }
-      polygons.pop()
+      polygons.pop();
 
-      let gpoly = svg.selectAll("#GPoly").data([1]).enter().append("g").attr("id", "GPoly");
+      let gpoly = svg
+        .selectAll("#GPoly")
+        .data([1])
+        .enter()
+        .append("g")
+        .attr("id", "GPoly");
 
       gpoly
         .selectAll("polygon")
@@ -146,7 +182,11 @@ const Viz: React.FC<IProps> = (props: IProps) => {
           //@ts-ignore
           d.map(point => [point[0], point[1]]).join(" ")
         )
-        .attr("style", (d, i) => `fill: black; opacity: ${0.05}; stroke: white`)
+        .attr("style", (d, i) => `fill: black; opacity: ${0}; stroke: white`)
+        .on("click", (d, i, ary) => {
+          setSelected(i);
+        });
+      /*
         .on("mouseover", (d, i, arr) => {
           //console.log(d3.event);
           //tmp = arr[i];  // This would find the "this" for the event.  It's the node in the DOM
@@ -164,43 +204,57 @@ const Viz: React.FC<IProps> = (props: IProps) => {
               () => `fill: black; opacity: ${0.05}; stroke: white`
             );
         })
-        .on("click", (d,i,ary) => {
-          setSelected(i);
-        });
+        */
 
       // End of varonoi section
-
-
     }
-  }, [props.data, props.valueOfSlider, props.whichAnchor, w, h,selected]);
+  }, [props.data, props.valueOfSlider, props.whichAnchor, w, h, selected]);
   return (
     <>
       <div className="viz">
-        <svg className="d3-component ingress-frame" ref={svgRef} style={{ marginLeft: "1%", width: "98%" }} />
+        <svg
+          className="d3-component ingress-frame"
+          ref={svgRef}
+          style={{ marginLeft: "1%", width: "98%" }}
+        />
       </div>
       <Row>
         <Col span={12}>
-      <div className="debug ingress-button">
-        props:
-      <ul>
-          <li>Which Anchor: {props.whichAnchor}</li>
-          <li>value of slider: {props.valueOfSlider}</li>
-          <li>Data
-          <ul>
-              {props.data && props.data.map(((d, i) => (<li className={i === selected ? "selected" : "notSelected"} key={i}> {i + 1}:{d.title}</li>)))}
+          <div className="debug ingress-button">
+            props:
+            <ul>
+              <li>Which Anchor: {props.whichAnchor}</li>
+              <li>value of slider: {props.valueOfSlider}</li>
+              <li>
+                Data
+                <ul>
+                  {props.data &&
+                    props.data.map((d, i) => (
+                      <li
+                        className={i === selected ? "selected" : "notSelected"}
+                        key={i}
+                      >
+                        {" "}
+                        {i + 1}:{d.title}
+                      </li>
+                    ))}
+                </ul>
+              </li>
             </ul>
-          </li>
-        </ul>
-      </div>
+          </div>
         </Col>
         <Col span={12}>
-        <div className="debug ingress-button">
-        state:
-      <ul>
-          <li>Selected Value: {selected}</li>
-          <li>Selected Name: {props.data && props.data.filter((d,i) => i === selected)[0].title}</li>
-        </ul>
-      </div>
+          <div className="debug ingress-button">
+            state:
+            <ul>
+              <li>Selected Value: {selected}</li>
+              <li>
+                Selected Name:{" "}
+                {props.data &&
+                  props.data.filter((d, i) => i === selected)[0].title}
+              </li>
+            </ul>
+          </div>
         </Col>
       </Row>
     </>
@@ -245,7 +299,6 @@ const Viz: React.FC<IProps> = (props: IProps) => {
 */
 
 export default Viz;
-
 
 /*
 

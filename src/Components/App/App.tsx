@@ -43,26 +43,23 @@ const App: React.FC = () => {
         <Layout>
           <Content className="ingress-frame dark-back">
           <Row type="flex">
-              <Col>
+              <Col span={2}>
                 <AnchorSelect which={whichAnchor} setWhich={setWhichAnchor} />
               </Col>
-              <Col span={1}>
-              </Col>
-              <Col>
+              <Col span={2}>
                 <TestControl
                   text="Add a ball"
                   value={value}
                   handleclick={() => dispatch({ type: "increment" })}
                 />
-              </Col>
-              <Col>
+
                 <TestControl
                   text="Remove a ball"
                   value={value}
                   handleclick={() => dispatch({ type: "decrement" })}
                 />
               </Col>
-              <Col span={18}>
+              <Col span={20}>
                 <Viz
                   data={rawPortals}
                   valueOfSlider={value}
