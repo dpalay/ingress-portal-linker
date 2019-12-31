@@ -19,6 +19,7 @@
     "react-dom": "^16.12.0",
     "react-scripts": "^3.3.0",
     "react-use-dimensions": "^1.2.1",
+    "resize-observer-polyfill": "^1.5.1",
     "typescript": "3.6.3"
   },
   "scripts": {

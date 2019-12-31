@@ -2,44 +2,46 @@ import React, { useEffect, useRef, useState } from "react";
 import "./Viz.css";
 import * as d3 from "d3";
 import { Delaunay } from "d3-delaunay";
-import { useWindowSize } from "@react-hook/window-size"
 import { Row, Col } from "antd";
+import useResizeOberver from '../../Utils/Hooks/useResizeObserver'
 
 type IDirection = "East" | "West" | "North" | "South";
 interface IProps {
   whichAnchor: IDirection;
   data?: {
-    guid: string;
+    x: number;
+    y: number;
     title: string;
-    coordinates: { lat: string; lng: string };
-    link: { intel: string; gmap: string };
-    image: string;
+    key: number;
   }[];
   valueOfSlider: number;
 }
-
+const [testX, testY] = [-89.567432, 42.996479]
 const Viz: React.FC<IProps> = (props: IProps) => {
   /* The useRef Hook creates a variable that "holds on" to a value across rendering
        passes. In this case it will hold our component's SVG DOM element. It's
        initialized null and React will assign it later (see the return statement) */
   const svgRef = useRef<SVGSVGElement>(null);
-  const [w, h] = useWindowSize(0, 0, { wait: 800 });
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
   const [selected, setSelected] = useState(0);
-  const portalDataset = (props.data &&
-    props.data.map((datum, i) => {
-      return {
-        x: +datum.coordinates.lng,
-        y: +datum.coordinates.lat,
-        title: datum.title,
-        key: i
-      };
-    })) || [{ x: 0, y: 0, title: "null" , key: 0}];
+  const dimensions = useResizeOberver(wrapperRef);
+ 
+  const val = props.valueOfSlider;
+  const portalDataset = (props.data) || [{ x: 0, y: 0, title: "null" , key: 0}];
 
   useEffect(() => {
-    let height = h - 102 - 163
-    let width = (svgRef.current && svgRef.current.clientWidth) || w;
-    if (props.data && svgRef.current) {
-      let val = props.valueOfSlider;
+
+    if (!svgRef.current) return 
+    if (!dimensions) return 
+    if (!wrapperRef.current) return
+  
+    console.log(dimensions);
+
+    let height = dimensions.height
+    let width = dimensions.width
+
+      
       const svg = d3.select(svgRef.current)
       //const height = 800;
       //const width = 1200;
@@ -50,7 +52,7 @@ const Viz: React.FC<IProps> = (props: IProps) => {
         right: 20
       };
       // set height of SVG
-      svg.attr("height", height);
+      //svg.attr("height", height);
 
       /**
        * DEBUG INFO
@@ -81,6 +83,7 @@ const Viz: React.FC<IProps> = (props: IProps) => {
         .domain([(xExtent[0] || 0), (xExtent[1] || 1)])
         //.domain([0, portalDataset.length])
         .range([margin.left, width - margin.right]);
+        console.log(x(testX));
       let y = d3
         .scaleLinear()
         .domain([(yExtent[0] || 0), (yExtent[1] || 1)])
@@ -96,28 +99,42 @@ const Viz: React.FC<IProps> = (props: IProps) => {
       //      svg.append("line").attr("x1",x(0)).attr("y1",y(0)).attr("x2",x(1)).attr("y2",y(1)).style("stroke","white")
       //      svg.append("line").attr("x1",x(0)).attr("y1",y(1)).attr("x2",x(1)).attr("y2",y(0)).style("stroke","white")
 
-      let circles = svg.selectAll("g#circles").data([1]).enter().append("g").attr("id","circles")
+      let circles = svg.selectAll("g#circles").data([1]).join(enter => 
+        enter.append("g").attr("id","circles").classed("new", true), 
+        update => update.classed("updated", true))
 
       circles.selectAll("circle").data(portalDataset).join(
-        enter => enter
+        enter => {
+          console.log(`enter:`)
+          console.log(enter)
+        return enter
         .append("circle")
         .attr("r", 1)
-        .attr("transform",`translate(${w/2},${h/2})`)
+        //.attr("transform",`translate(${width/2},${height/2})`)
+        .attr("cx", width/2)
+        .attr("cy", height/2)
         .call(
           enter => enter
             .transition()
             .delay((d, i) => i * 10)
             .duration(1500)
             .attr("r", 5)
-            .attr("transform",(d,i) => `translate(${x(d.x)},${y(d.y)})`)
-            .style("fill", d => colorScale(gridScale(d.x)))),
-        update => update.attr("class", "updated").call(
+            //.attr("transform",(d,i) => `translate(${x(d.x)},${y(d.y)})`)
+            .attr("cx", d => x(d.x))
+            .attr("cy", d => y(d.y))
+            .style("fill", d => colorScale(gridScale(d.x))))},
+        update => {
+          console.log("update")
+          console.log(update)
+          return update.attr("class", "updated").call(
           update => update
             .transition()
             .duration(500)
             .attr("r", 5)
-            .attr("transform",(d,i) => `translate(${x(d.x)},${y(d.y)})`)
-            .style("fill", d => colorScale(gridScale(d.x))))
+                        //.attr("transform",(d,i) => `translate(${x(d.x)},${y(d.y)})`)
+                        .attr("cx", d => x(d.x))
+                        .attr("cy", d => y(d.y))
+            .style("fill", d => colorScale(gridScale(d.x))))}
       )
 
       
@@ -135,13 +152,14 @@ const Viz: React.FC<IProps> = (props: IProps) => {
       }
       polygons.pop()
 
-      let gpoly = svg.selectAll("#GPoly").data([1]).enter().append("g").attr("id", "GPoly");
+      let gpoly = svg.selectAll("#GPoly").data([1]).join(enter => 
+        enter.append("g").attr("id","GPoly").classed("new", true), 
+        update => update.classed("updated", true))
+      
 
       gpoly
         .selectAll("polygon")
-        .data(polygons)
-        .enter()
-        .append("polygon")
+        .data(polygons).join("polygon")
         .attr("points", d =>
           //@ts-ignore
           d.map(point => [point[0], point[1]]).join(" ")
@@ -171,38 +189,14 @@ const Viz: React.FC<IProps> = (props: IProps) => {
       // End of varonoi section
 
 
-    }
-  }, [props.data, props.valueOfSlider, props.whichAnchor, w, h,selected]);
+  
+  }, [val, props.whichAnchor,dimensions,selected,portalDataset]);
   return (
     <>
-      <div className="viz">
-        <svg className="d3-component ingress-frame" ref={svgRef} style={{ marginLeft: "1%", width: "98%" }} />
+      <div className="viz" ref={wrapperRef}>
+        <svg className="d3-component ingress-frame" ref={svgRef} style={{ marginLeft: "1%", width: "98%", height: "100%"}} />
       </div>
-      <Row>
-        <Col span={12}>
-      <div className="debug ingress-button">
-        props:
-      <ul>
-          <li>Which Anchor: {props.whichAnchor}</li>
-          <li>value of slider: {props.valueOfSlider}</li>
-          <li>Data
-          <ul>
-              {props.data && props.data.map(((d, i) => (<li className={i === selected ? "selected" : "notSelected"} key={i}> {i + 1}:{d.title}</li>)))}
-            </ul>
-          </li>
-        </ul>
-      </div>
-        </Col>
-        <Col span={12}>
-        <div className="debug ingress-button">
-        state:
-      <ul>
-          <li>Selected Value: {selected}</li>
-          <li>Selected Name: {props.data && props.data.filter((d,i) => i === selected)[0].title}</li>
-        </ul>
-      </div>
-        </Col>
-      </Row>
+      
     </>
   );
 };

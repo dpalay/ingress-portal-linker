@@ -6,14 +6,22 @@ import Viz from "../Viz/Viz";
 import TestControl from "../TestControl/TestControl";
 import AnchorSelect from "../AnchorSelect/AnchorSelect";
 import rawPortals from "../../Utils/Data/data";
+import DebugInfo from "../DebugInfo/DebugInfo";
 
 type IDirection = "East" | "West" | "North" | "South";
 
 const directionDefault: IDirection = "West";
 const { Header, Footer, Content } = Layout;
-
 const initialCount = 100;
 
+const data = rawPortals.map((datum, i) => {
+  return {
+    x: +datum.coordinates.lng,
+    y: +datum.coordinates.lat,
+    title: datum.title,
+    key: i
+  };
+})
 const handleClickReducer = (
   count:  number,
   action: { type: string }
@@ -44,6 +52,8 @@ const App: React.FC = () => {
           <Content className="ingress-frame dark-back">
           <Row type="flex">
               <Col>
+              <Row>
+                <Col>
                 <AnchorSelect which={whichAnchor} setWhich={setWhichAnchor} />
               </Col>
               <Col span={1}>
@@ -53,18 +63,25 @@ const App: React.FC = () => {
                   text="Add a ball"
                   value={value}
                   handleclick={() => dispatch({ type: "increment" })}
-                />
+                  />
               </Col>
               <Col>
                 <TestControl
                   text="Remove a ball"
                   value={value}
                   handleclick={() => dispatch({ type: "decrement" })}
-                />
+                  />
               </Col>
-              <Col span={18}>
+                  </Row>
+                  <Row>
+                  <Col>
+                  <DebugInfo selected={0} data={data} valueOfSlider={value} whichAnchor={whichAnchor}></DebugInfo>
+                  </Col>
+                    </Row>
+                  </Col>
+              <Col>
                 <Viz
-                  data={rawPortals}
+                  data={data}
                   valueOfSlider={value}
                   whichAnchor={whichAnchor}
                 />
