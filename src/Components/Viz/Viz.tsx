@@ -15,6 +15,7 @@ interface IProps {
     key: number;
   }[];
   valueOfSlider: number;
+  setSelected: React.Dispatch<React.SetStateAction<number>>
 }
 const [testX, testY] = [-89.567432, 42.996479]
 const Viz: React.FC<IProps> = (props: IProps) => {
@@ -24,7 +25,8 @@ const Viz: React.FC<IProps> = (props: IProps) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const [selected, setSelected] = useState(0);
+  
+  const setSelected = props.setSelected;
   const dimensions = useResizeOberver(wrapperRef);
  
   const val = props.valueOfSlider;
@@ -190,7 +192,7 @@ const Viz: React.FC<IProps> = (props: IProps) => {
 
 
   
-  }, [val, props.whichAnchor,dimensions,selected,portalDataset]);
+  }, [val, props.whichAnchor,dimensions,portalDataset]);
   return (
     <>
       <div className="viz" ref={wrapperRef}>

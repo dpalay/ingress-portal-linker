@@ -41,6 +41,7 @@ const App: React.FC = () => {
   const [whichAnchor, setWhichAnchor] = useState(
     directionDefault as IDirection
   );
+  const [selected, setSelected] = useState(0);
 
   return (
     <div>
@@ -75,7 +76,7 @@ const App: React.FC = () => {
                   </Row>
                   <Row>
                   <Col>
-                  <DebugInfo selected={0} data={data} valueOfSlider={value} whichAnchor={whichAnchor}></DebugInfo>
+                  <DebugInfo selected={selected} data={data} valueOfSlider={value} whichAnchor={whichAnchor}></DebugInfo>
                   </Col>
                     </Row>
                   </Col>
@@ -84,6 +85,7 @@ const App: React.FC = () => {
                   data={data}
                   valueOfSlider={value}
                   whichAnchor={whichAnchor}
+                  setSelected={setSelected}
                 />
               </Col>
             </Row>
