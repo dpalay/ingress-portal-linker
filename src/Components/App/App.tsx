@@ -2,7 +2,7 @@ import React, { useState, useReducer } from "react";
 import {Row, Col, Layout} from 'antd'
 import "./App.css";
 import myClickFunction from "../../Utils/events";
-import Viz from "../Viz/Viz";
+import VizContainer from "../VizContainer/VizContainer";
 import TestControl from "../TestControl/TestControl";
 import AnchorSelect from "../AnchorSelect/AnchorSelect";
 import rawPortals from "../../Utils/Data/data";
@@ -61,7 +61,7 @@ const App: React.FC = () => {
                 />
               </Col>
               <Col span={20}>
-                <Viz
+                <VizContainer
                   data={rawPortals}
                   valueOfSlider={value}
                   whichAnchor={whichAnchor}

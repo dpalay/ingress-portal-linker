@@ -4,51 +4,31 @@ import * as d3 from "d3";
 import { Delaunay } from "d3-delaunay";
 import { useWindowSize } from "@react-hook/window-size";
 import { Row, Col } from "antd";
-
-type IDirection = "East" | "West" | "North" | "South";
 interface IProps {
-  whichAnchor: IDirection;
   data?: {
     guid: string;
     title: string;
     coordinates: { lat: string; lng: string };
     link: { intel: string; gmap: string };
     image: string;
-  }[];
-  valueOfSlider: number;
+  }[],
+  size: {width: number, height: number},
+  svg: SVGSVGElement;
 }
 
 const Viz: React.FC<IProps> = (props: IProps) => {
   /* The useRef Hook creates a variable that "holds on" to a value across rendering
        passes. In this case it will hold our component's SVG DOM element. It's
        initialized null and React will assign it later (see the return statement) */
-  const svgRef = useRef<SVGSVGElement>(null);
-  const [w, h] = useWindowSize(0, 0, { wait: 800 });
-  const [selected, setSelected] = useState(0);
-  const portalDataset = (props.data &&
-    props.data.map((datum, i) => {
-      return {
-        x: +datum.coordinates.lng,
-        y: +datum.coordinates.lat,
-        title: datum.title,
-        key: i
-      };
-    })) || [{ x: 0, y: 0, title: "null", key: 0 }];
+  
+  
+
 
   useEffect(() => {
-    let height = h - 102;
-    let width = (svgRef.current && svgRef.current.clientWidth) || w;
-    if (props.data && svgRef.current) {
-      let val = props.valueOfSlider;
-      const svg = d3.select(svgRef.current);
-      //const height = 800;
-      //const width = 1200;
-      const margin = {
-        top: 20,
-        bottom: 20,
-        left: 20,
-        right: 20
-      };
+    let {height, width } = props.size;
+    let svg = d3.select(props.svg)
+    
+    let test = [0,1,2,3,4,5]
       // set height of SVG
       svg.attr("height", height);
 
@@ -61,34 +41,35 @@ const Viz: React.FC<IProps> = (props: IProps) => {
         .attr("class", "debug")
         .attr(
           "transform",
-          `translate(${svgRef.current.clientWidth / 2},${height / 2})`
+          `translate(${width / 2},${height / 2})`
         )
         .append("text")
         .style("stroke", "var(--l8")
         .text(
-          `Screen M-L: ${margin.left}\nScreen W - M.r: ${width - margin.right}`
+          `Debug Stuff`
         );
 
       // get data from props
-      const data = portalDataset;
+      const data = props.data || [];
       //const data = portalDataset.slice(0,val)
 
       // Typescript stuff
-      let xExtent = d3.extent(data, d => d.x);
-      let yExtent = d3.extent(data, d => d.y);
+      //let xExtent = d3.extent(data, d => d.x);
+      //let yExtent = d3.extent(data, d => d.y);
 
       //setup ranges
       let x = d3
         .scaleLinear()
-        .domain([xExtent[0] || 0, xExtent[1] || 1])
-        //.domain([0, portalDataset.length])
-        .range([margin.left, width - margin.right]);
+        //.domain([xExtent[0] || 0, xExtent[1] || 1])
+        .domain([0, test.length-1])
+        //.range([margin.left, width - margin.right]);
+        .range([0,width])
       let y = d3
         .scaleLinear()
-        .domain([yExtent[0] || 0, yExtent[1] || 1])
-        //.domain([0, 1])
-        .range([height - margin.bottom, margin.top]);
-
+        //.domain([yExtent[0] || 0, yExtent[1] || 1])
+        .domain([0, 5])
+        .range([height,0]);
+/*
       let gridScale = d3
         .scaleLinear()
         .domain([xExtent[0] || 0, xExtent[1] || 1])
@@ -97,7 +78,7 @@ const Viz: React.FC<IProps> = (props: IProps) => {
         // @ts-ignore
         .scaleLinear().domain([0, 1, 2, 3, 4, 5, 6, 7, 8]).range(["#333","#fece5a","#ffa630","#ff7315","#e40000","#fd2992","#eb26cd","#c124e0","#9627f4"]);
         
-        
+    */
 
       svg.selectAll("line").remove();
       svg
@@ -124,7 +105,7 @@ const Viz: React.FC<IProps> = (props: IProps) => {
 
       circles
         .selectAll("circle")
-        .data(data)
+        .data(test)
         .join(
           enter =>
             enter
@@ -132,14 +113,15 @@ const Viz: React.FC<IProps> = (props: IProps) => {
               .attr("class", "new")
               .attr("r", 1)
               .attr("transform", `translate(${width / 2},${height / 2})`)
-              .style("fill", d => colorScale(gridScale(d.x)))
+              .style("fill", "white")
+              //.style("fill", d => colorScale(gridScale(d.x)))
               .call(enter =>
                 enter
                   .transition()
                   .delay((d, i) => i * 10)
                   .duration(1500)
                   .attr("r", 5)
-                  .attr("transform", (d, i) => `translate(${x(d.x)},${y(d.y)})`)
+                  .attr("transform", (d, i) => `translate(${x(d)},${y(d)})`)
               ),
           update =>
             update.attr("class", "updated").call(update =>
@@ -147,10 +129,11 @@ const Viz: React.FC<IProps> = (props: IProps) => {
                 .transition()
                 .duration(500)
                 .attr("r", 5)
-                .attr("transform", (d, i) => `translate(${x(d.x)},${y(d.y)})`)
-                .style("fill", d => colorScale(gridScale(d.x)))
+                .attr("transform", (d, i) => `translate(${x(d)},${y(d)})`)
+                //.style("fill", d => colorScale(gridScale(d.x)))
             )
         );
+        /*
 
       // Start of Voronoi stuff
       const delaunay = Delaunay.from(
@@ -209,56 +192,11 @@ const Viz: React.FC<IProps> = (props: IProps) => {
         */
 
       // End of varonoi section
-    }
-  }, [props.data, props.valueOfSlider, props.whichAnchor, w, h, selected]);
+    
+  }, [props.data]);
   return (
     <>
-      <div className="viz">
-        <svg
-          className="d3-component ingress-frame"
-          ref={svgRef}
-          style={{ marginLeft: "1%", width: "98%" }}
-        />
-      </div>
-      <Row>
-        <Col span={12}>
-          <div className="debug ingress-button">
-            props:
-            <ul>
-              <li>Which Anchor: {props.whichAnchor}</li>
-              <li>value of slider: {props.valueOfSlider}</li>
-              <li>
-                Data
-                <ul>
-                  {props.data &&
-                    props.data.map((d, i) => (
-                      <li
-                        className={i === selected ? "selected" : "notSelected"}
-                        key={i}
-                      >
-                        {" "}
-                        {i + 1}:{d.title}
-                      </li>
-                    ))}
-                </ul>
-              </li>
-            </ul>
-          </div>
-        </Col>
-        <Col span={12}>
-          <div className="debug ingress-button">
-            state:
-            <ul>
-              <li>Selected Value: {selected}</li>
-              <li>
-                Selected Name:{" "}
-                {props.data &&
-                  props.data.filter((d, i) => i === selected)[0].title}
-              </li>
-            </ul>
-          </div>
-        </Col>
-      </Row>
+      
     </>
   );
 };
