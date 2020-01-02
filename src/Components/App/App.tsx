@@ -11,12 +11,6 @@ import PortalEntry from "../PortalEntry/PortalEntry";
 import Portal from "../../Utils/Objects/Portal";
 
 type IDirection = "East" | "West" | "North" | "South";
-interface IData {
-  x: number;
-  y: number;
-  title: string;
-  key: number;
-}
 interface IRawData {
   guid: string;
   title: string;
