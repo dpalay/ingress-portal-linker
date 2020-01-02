@@ -10,12 +10,7 @@ import Portal from "../../Utils/Objects/Portal";
 type IDirection = "East" | "West" | "North" | "South";
 interface IProps {
   whichAnchor: IDirection;
-  data?: {
-    x: number;
-    y: number;
-    title: string;
-    key: number;
-  }[];
+  data?: Portal[];
   setSelected: React.Dispatch<React.SetStateAction<number>>;
   shouldGenerateLinks: boolean;
   setShouldGenerateLinks: React.Dispatch<React.SetStateAction<boolean>>;
@@ -30,7 +25,7 @@ const Viz: React.FC<IProps> = (props: IProps) => {
   const dimensions = useResizeOberver(wrapperRef);
  
   const {setSelected, shouldGenerateLinks, setShouldGenerateLinks, whichAnchor} = props
-  const portalDataset = (props.data) || [{ x: 0, y: 0, title: "null" , key: 0}];
+  const portalDataset = (props.data) || [new Portal(0,0,"NO DATA",0)];
 
   useEffect(() => {
 
@@ -208,7 +203,7 @@ const Viz: React.FC<IProps> = (props: IProps) => {
       setShouldGenerateLinks(false);
 
   
-  }, [props.whichAnchor,dimensions,portalDataset,setSelected,setShouldGenerateLinks,shouldGenerateLinks]);
+  }, [whichAnchor,dimensions,portalDataset,setSelected,setShouldGenerateLinks,shouldGenerateLinks]);
   return (
     <>
       <div className="viz" ref={wrapperRef}>
