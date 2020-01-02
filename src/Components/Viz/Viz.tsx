@@ -104,9 +104,9 @@ const Viz: React.FC<IProps> = (props: IProps) => {
         return enter
         .append("circle")
         .attr("r", 1)
-        .attr("transform",`translate(${height/2},(${width/2})`)
-        //.attr("cx", width/2)
-        //.attr("cy", height/2)
+        //.attr("transform",`translate(${height/2},${width/2})`)
+        .attr("cx", width/2)
+        .attr("cy", height/2)
         .call(
           enter => enter
             .transition()
