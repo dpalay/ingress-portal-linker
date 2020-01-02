@@ -6,8 +6,8 @@ class Link {
     dest: Portal;
     line: Line;
     constructor(source: Portal, dest: Portal) {
-        this.source = new Portal(source.location, source.title)
-        this.dest = new Portal(dest.location, dest.title)
+        this.source = source
+        this.dest = dest
         this.line = new Line(source.location, dest.location)
     }
 

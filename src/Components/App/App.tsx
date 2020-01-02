@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from "react";
+import React, { useState, useReducer, useMemo } from "react";
 import { Row, Col, Layout } from "antd";
 import "./App.css";
 import myClickFunction from "../../Utils/events";
@@ -8,6 +8,7 @@ import AnchorSelect from "../AnchorSelect/AnchorSelect";
 import rawPortals from "../../Utils/Data/data";
 import DebugInfo from "../DebugInfo/DebugInfo";
 import PortalEntry from "../PortalEntry/PortalEntry";
+import Portal from "../../Utils/Objects/Portal";
 
 type IDirection = "East" | "West" | "North" | "South";
 interface IData {
@@ -46,6 +47,7 @@ const App: React.FC = () => {
   const [rawData, setRawData] = useState<IRawData[]>(rawPortals);
   const [shouldGenerateLinks, setShouldGenerateLinks] = useState(false);
 
+
   const handleClickReducer = (count: number, action: { type: string }) => {
     switch (action.type) {
       case "increment":
@@ -56,23 +58,16 @@ const App: React.FC = () => {
         return Math.max(1, count - 1);
       case "decrementByTen":
         return Math.max(1, count - 10);
-      default:
-        throw new Error();
-    }
-  };
-
-  const [value, dispatch] = useReducer(handleClickReducer, initialCount);
-
-  const data = rawData
-    .map((datum, i) => {
-      return {
-        x: +datum.coordinates.lng,
-        y: +datum.coordinates.lat,
-        title: datum.title,
-        key: i
+        default:
+          throw new Error();
+        }
       };
-    })
-    .slice(0, value);
+      const [value, dispatch] = useReducer(handleClickReducer, initialCount);
+      
+      const data = useMemo(() =>  rawData
+      .map((datum, i) => new Portal(+datum.coordinates.lng,+datum.coordinates.lat,datum.title,i))
+      .slice(0, value),[rawData,value])
+
   return (
     <div>
       <Layout>

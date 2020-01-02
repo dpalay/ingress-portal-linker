@@ -4,11 +4,12 @@ import Link from "./Link";
 class Portal {
   location: Point;
   title: string;
+  key: number;
 
-  constructor(location: Point, title: string) {
-    this.location = new Point();
-    this.location.set(location);
+  constructor(x: number, y: number, title: string, index: number) {
+    this.location = new Point(x,y);
     this.title = title;
+    this.key = index;
   }
 
   linkTo(otherPortal: Portal): Link {
