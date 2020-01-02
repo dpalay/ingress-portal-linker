@@ -81,16 +81,16 @@ const App: React.FC = () => {
 
         <Content className="ingress-frame dark-back">
           <Row type="flex">
-            <Col span={6}>
+            <Col span={7}>
               <div className={"ingress-frame padded"}>
                 <Row>
-                  <Col span={10}>
+                  <Col lg={{span: 10}} md={{span:20}} >
                     <AnchorSelect
                       which={whichAnchor}
                       setWhich={setWhichAnchor}
                     />
                   </Col>
-                  <Col span={7}>
+                  <Col lg={{span: 7}} md={{span: 10}} sm={{span: 20}}>
                     <TestControl
                       text="Add a ball"
                       value={value}
@@ -102,7 +102,7 @@ const App: React.FC = () => {
                       handleclick={() => dispatch({ type: "incrementByTen" })}
                     />
                   </Col>
-                  <Col span={7}>
+                  <Col lg={{span: 7}} md={{span: 10}} sm={{span: 20}}>
                     <TestControl
                       text="Remove a ball"
                       value={value}
@@ -132,7 +132,7 @@ const App: React.FC = () => {
                 </Col>
               </Row>
             </Col>
-            <Col span={18}>
+            <Col span={17}>
               <Viz
                 data={data}
                 whichAnchor={whichAnchor}
