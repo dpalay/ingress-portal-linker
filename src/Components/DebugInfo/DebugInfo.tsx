@@ -3,11 +3,11 @@ import { Row, Col } from 'antd'
 
 interface IData  { x: number; y: number; title: string; key: number; }
 
-const DebugInfo = (props: {selected: number, data: IData[], whichAnchor: string, valueOfSlider: number}) => {
+const DebugInfo = (props: {shouldGenerateLinks: boolean, selected: number, data: IData[], whichAnchor: string, valueOfSlider: number}) => {
 
-  const data = props.data
-  const selected = props.selected
+  const {data, selected, whichAnchor, valueOfSlider, shouldGenerateLinks} = props
   const selectedPortal = data[selected]
+  
     return (
       <div className="ingress-frame padded">
         <Row>
@@ -16,8 +16,9 @@ const DebugInfo = (props: {selected: number, data: IData[], whichAnchor: string,
       <div className="debug ingress-button">
         props:
       <ul>
-          <li>Which Anchor: {props.whichAnchor}</li>
-          <li>value of slider: {props.valueOfSlider}</li>
+          <li>Which Anchor: {whichAnchor}</li>
+          <li>value of slider: {valueOfSlider}</li>
+          <li>Should generate links?: {shouldGenerateLinks ? "Yep!":  "Nope"}</li>
           <li>Data
           <ol>
               {data && data.map(((d, i) => (<li className={i === props.selected ? "selected" : "notSelected"} key={i}> {d.title}</li>)))}

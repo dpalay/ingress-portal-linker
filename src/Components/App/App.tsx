@@ -44,6 +44,7 @@ const App: React.FC = () => {
   );
   const [selected, setSelected] = useState(0);
   const [rawData, setRawData] = useState<IRawData[]>(rawPortals);
+  const [shouldGenerateLinks, setShouldGenerateLinks] = useState(false);
 
   const handleClickReducer = (count: number, action: { type: string }) => {
     switch (action.type) {
@@ -84,13 +85,13 @@ const App: React.FC = () => {
             <Col span={7}>
               <div className={"ingress-frame padded"}>
                 <Row>
-                  <Col lg={{span: 10}} md={{span:20}} >
+                  <Col lg={{ span: 10 }} md={{ span: 20 }} >
                     <AnchorSelect
                       which={whichAnchor}
                       setWhich={setWhichAnchor}
                     />
                   </Col>
-                  <Col lg={{span: 7}} md={{span: 10}} sm={{span: 20}}>
+                  <Col lg={{ span: 7 }} md={{ span: 10 }} sm={{ span: 20 }}>
                     <TestControl
                       text="Add a ball"
                       value={value}
@@ -102,7 +103,7 @@ const App: React.FC = () => {
                       handleclick={() => dispatch({ type: "incrementByTen" })}
                     />
                   </Col>
-                  <Col lg={{span: 7}} md={{span: 10}} sm={{span: 20}}>
+                  <Col lg={{ span: 7 }} md={{ span: 10 }} sm={{ span: 20 }}>
                     <TestControl
                       text="Remove a ball"
                       value={value}
@@ -118,7 +119,12 @@ const App: React.FC = () => {
               </div>
               <Row>
                 <Col>
-                  <PortalEntry text={JSON.stringify(rawPortals)} rawData={rawData} setRawData={setRawData}/>
+                  <PortalEntry 
+                  text={JSON.stringify(rawPortals)} 
+                  rawData={rawData} 
+                  setRawData={setRawData} 
+                  setShouldGenerateLinks={setShouldGenerateLinks} 
+                  />
                 </Col>
               </Row>
               <Row>
@@ -128,6 +134,7 @@ const App: React.FC = () => {
                     data={data}
                     valueOfSlider={value}
                     whichAnchor={whichAnchor}
+                    shouldGenerateLinks={shouldGenerateLinks}
                   ></DebugInfo>
                 </Col>
               </Row>
@@ -137,6 +144,8 @@ const App: React.FC = () => {
                 data={data}
                 whichAnchor={whichAnchor}
                 setSelected={setSelected}
+                shouldGenerateLinks={shouldGenerateLinks}
+                setShouldGenerateLinks={setShouldGenerateLinks}
               />
             </Col>
           </Row>

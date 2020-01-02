@@ -4,6 +4,8 @@ import * as d3 from "d3";
 import { Delaunay } from "d3-delaunay";
 import { Row, Col } from "antd";
 import useResizeOberver from '../../Utils/Hooks/useResizeObserver'
+import * as util from '../../Utils/Functions/functions'
+import Portal from "../../Utils/Objects/Portal";
 
 type IDirection = "East" | "West" | "North" | "South";
 interface IProps {
@@ -14,7 +16,9 @@ interface IProps {
     title: string;
     key: number;
   }[];
-  setSelected: React.Dispatch<React.SetStateAction<number>>
+  setSelected: React.Dispatch<React.SetStateAction<number>>;
+  shouldGenerateLinks: boolean;
+  setShouldGenerateLinks: React.Dispatch<React.SetStateAction<boolean>>;
 }
 const [testX, testY] = [-89.567432, 42.996479]
 const Viz: React.FC<IProps> = (props: IProps) => {
@@ -23,11 +27,9 @@ const Viz: React.FC<IProps> = (props: IProps) => {
        initialized null and React will assign it later (see the return statement) */
   const svgRef = useRef<SVGSVGElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-
-  
-  const setSelected = props.setSelected;
   const dimensions = useResizeOberver(wrapperRef);
  
+  const {setSelected, shouldGenerateLinks, setShouldGenerateLinks, whichAnchor} = props
   const portalDataset = (props.data) || [{ x: 0, y: 0, title: "null" , key: 0}];
 
   useEffect(() => {
@@ -185,9 +187,28 @@ const Viz: React.FC<IProps> = (props: IProps) => {
 
       // End of varonoi section
 
+      //Start of links section
+      // Find Anchor portal
+
+      const sortedList = data.filter((d,i) => {
+        switch (whichAnchor) {
+          case "West":
+            
+            break;
+        
+          default:
+            break;
+        }
+      })
+      // Order the other portals
+
+      //
+      
+
+      setShouldGenerateLinks(false);
 
   
-  }, [props.whichAnchor,dimensions,portalDataset]);
+  }, [props.whichAnchor,dimensions,portalDataset,setSelected,setShouldGenerateLinks,shouldGenerateLinks]);
   return (
     <>
       <div className="viz" ref={wrapperRef}>

@@ -17,6 +17,7 @@ interface IProps {
   text: string;
   rawData: IRawData[];
   setRawData: React.Dispatch<React.SetStateAction<IRawData[]>>;
+  setShouldGenerateLinks: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const PortalEntry = (props: IProps) => {
@@ -46,6 +47,14 @@ const PortalEntry = (props: IProps) => {
       >
         {"Load JSON portal data!"}
       </Button>
+      <Button
+       className="ingress-button"
+       type="primary"
+       title="GenerateLinks"
+       onClick ={() => props.setShouldGenerateLinks(true)}
+       >
+         {"Generate Links"}
+       </Button>
     </div>
   );
 };
