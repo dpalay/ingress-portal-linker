@@ -14,7 +14,6 @@ interface IProps {
     title: string;
     key: number;
   }[];
-  valueOfSlider: number;
   setSelected: React.Dispatch<React.SetStateAction<number>>
 }
 const [testX, testY] = [-89.567432, 42.996479]
@@ -29,7 +28,6 @@ const Viz: React.FC<IProps> = (props: IProps) => {
   const setSelected = props.setSelected;
   const dimensions = useResizeOberver(wrapperRef);
  
-  const val = props.valueOfSlider;
   const portalDataset = (props.data) || [{ x: 0, y: 0, title: "null" , key: 0}];
 
   useEffect(() => {
@@ -50,12 +48,10 @@ const Viz: React.FC<IProps> = (props: IProps) => {
       const margin = {
         top: 20,
         bottom: 20,
-        left: 20,
-        right: 20
+        left: 50,
+        right: 50
       };
-      // set height of SVG
-      //svg.attr("height", height);
-
+      
       /**
        * DEBUG INFO
        */
@@ -97,10 +93,6 @@ const Viz: React.FC<IProps> = (props: IProps) => {
       // @ts-ignore
       let colorScale = d3.scaleLinear().domain([0, 1, 2, 3, 4, 5, 6, 7, 8]).range(["#333", "#fece5a", "#ffa630", "#ff7315", "#e40000", "#fd2992", "#eb26cd", "#c124e0", "#9627f4"])
 
-      //      svg.selectAll("line").remove();
-      //      svg.append("line").attr("x1",x(0)).attr("y1",y(0)).attr("x2",x(1)).attr("y2",y(1)).style("stroke","white")
-      //      svg.append("line").attr("x1",x(0)).attr("y1",y(1)).attr("x2",x(1)).attr("y2",y(0)).style("stroke","white")
-
       let circles = svg.selectAll("g#circles").data([1]).join(enter => 
         enter.append("g").attr("id","circles").classed("new", true), 
         update => update.classed("updated", true))
@@ -112,14 +104,14 @@ const Viz: React.FC<IProps> = (props: IProps) => {
         return enter
         .append("circle")
         .attr("r", 1)
-        //.attr("transform",`translate(${width/2},${height/2})`)
-        .attr("cx", width/2)
-        .attr("cy", height/2)
+        .attr("transform",`translate(${height/2},(${width/2})`)
+        //.attr("cx", width/2)
+        //.attr("cy", height/2)
         .call(
           enter => enter
             .transition()
-            .delay((d, i) => i * 10)
-            .duration(1500)
+            //.delay((d, i) => i * 10)
+            .duration(500)
             .attr("r", 5)
             //.attr("transform",(d,i) => `translate(${x(d.x)},${y(d.y)})`)
             .attr("cx", d => x(d.x))
@@ -136,7 +128,10 @@ const Viz: React.FC<IProps> = (props: IProps) => {
                         //.attr("transform",(d,i) => `translate(${x(d.x)},${y(d.y)})`)
                         .attr("cx", d => x(d.x))
                         .attr("cy", d => y(d.y))
-            .style("fill", d => colorScale(gridScale(d.x))))}
+            .style("fill", d => colorScale(gridScale(d.x))))},
+        exit => exit.call(
+          exit => exit.transition().duration(500).attr("r",0)
+        )
       )
 
       
@@ -183,7 +178,7 @@ const Viz: React.FC<IProps> = (props: IProps) => {
               "style",
               () => `fill: black; opacity: ${0.05}; stroke: white`
             );
-        })
+        }) 
         .on("click", (d,i,ary) => {
           setSelected(i);
         });
@@ -192,7 +187,7 @@ const Viz: React.FC<IProps> = (props: IProps) => {
 
 
   
-  }, [val, props.whichAnchor,dimensions,portalDataset]);
+  }, [props.whichAnchor,dimensions,portalDataset]);
   return (
     <>
       <div className="viz" ref={wrapperRef}>
@@ -203,178 +198,4 @@ const Viz: React.FC<IProps> = (props: IProps) => {
   );
 };
 
-/*
-//This works!!
-  if (props.data && d3Container.current) {
-            const svg = d3.select(d3Container.current);
-            // set width/height of SVG
-            svg.attr('width', 500).attr('height',500)
-            // get data from props
-            const data = d3.range(props.data[0].count)
-    
-            
-            const update = svg.selectAll("circle").data(data)
-            
-            // When removing an entry
-            update.exit().remove();
-
-            // update existing elements
-            update.attr("new", "false")
-            .transition()
-                .duration(500)
-                .ease(d3.easeQuadInOut)
-                .attr("transform", (datum, i , arr) => `translate(${(i+1) * 480/(arr.length+1)},200)`)
-                
-            
-
-            // Adding new elements
-            update.enter()
-            .append("circle")
-            .data(data)
-            .attr("r", 10)
-            .attr("new", "true")
-            .attr("transform", (datum, i , arr) => `translate(${(i+1) * 480/(arr.length+1)},200)`)
-            //@ts-ignore
-            .merge(update)
-    
-    }
-*/
-
 export default Viz;
-
-
-/*
-
-      /**
-       * DEBUG INFO
-       *
-      svg.selectAll("g.debug").data([1]).enter()
-        .append("g")
-        .attr("class", "debug")
-        .classed("level_2", true)
-        .attr("transform", "translate(400,80)")
-        .text(width);
-
-      /**
-       * Starting the Dataset for the circles
-       *
-      // get data from props
-      const data = portalDataset;
-      //const data = portalDataset.slice(0,val)
-
-
-
-
-
-      //setup ranges
-      let x = d3
-        .scaleLinear()
-        //@ts-ignore
-        .domain(d3.extent(portalDataset, d => d.x))
-        .range([margin.left, width - margin.right]);
-      let y = d3
-        .scaleLinear()
-        //@ts-ignore
-        .domain(d3.extent(portalDataset, d => d.y))
-        .range([height - margin.bottom, margin.top]);
-
-
-      // Start of Voronoi stuff
-      const delaunay = Delaunay.from(data.map(datum => [datum.x, datum.y]));
-      const voronoi = delaunay.voronoi([-90, -180, 90, 180]);
-      let polyGenerator = voronoi.cellPolygons();
-
-      let polygons = [];
-      let isRunning = true;
-      while (isRunning) {
-        let polygon = polyGenerator.next();
-        polygons.push(polygon.value);
-        isRunning = !polygon.done;
-      }
-      polygons.pop()
-
-      let gpoly = svg.selectAll("#GPoly").data([1]).enter().append("g").attr("id", "GPoly");
-
-      gpoly
-        .selectAll("polygon")
-        .data(polygons)
-        .enter()
-        .append("polygon")
-        .attr("points", d =>
-          //@ts-ignore
-          d.map(point => [x(point[0]), y(point[1])]).join(" ")
-        )
-        .attr("style", (d, i) => `fill: black; opacity: ${0.05}; stroke: white`)
-        .on("mouseover", (d, i, arr) => {
-          console.log(d3.event);
-          //tmp = arr[i];  // This would find the "this" for the event.  It's the node in the DOM
-          d3.select(arr[i])
-            .transition()
-            .duration(300)
-            .attr("style", () => `fill: blue; opacity: ${0.2}; stroke: white`);
-        })
-        .on("mouseleave", (d, i, arr) => {
-          d3.select(arr[i])
-            .transition()
-            .duration(300)
-            .attr(
-              "style",
-              () => `fill: black; opacity: ${0.05}; stroke: white`
-            );
-        });
-
-      // End of varonoi section
-
-
-
-      const update = svg.selectAll("g.circleContainer").data(data);
-
-      // When removing an entry
-      update.exit().remove();
-
-      // update existing elements
-      update
-        .attr("new", "false")
-        .transition()
-        .duration(500)
-        .ease(d3.easeQuadInOut)
-        .attr(
-          "transform",
-          (datum, i, arr) => `translate(${x(datum.x)},${y(datum.y)})`
-        )
-        .style("fill", (d, i, arr) =>
-          d3.interpolateRainbow((i + 1) / (arr.length + 1))
-        )
-        .style("stroke", "none");
-
-      // Adding new elements
-      let update_enter = update.enter();
-      let update_group_with_data = update_enter
-        .append("g")
-        .attr("class", "circleContainer")
-        .attr("new", "true")
-        .attr(
-          "transform",
-          (datum, i, arr) => `translate(${x(datum.x)},${y(datum.y)})`
-        )
-        .style("fill", (d, i, arr) =>
-          d3.interpolateRainbow((i + 1) / (arr.length + 1))
-        )
-        .style("stroke", "black")
-        .data(data);
-
-      update_group_with_data
-        .append("circle")
-        .attr("name", d => d.title)
-        .attr("r", 0)
-        .transition()
-        .duration(500)
-        .delay((d, i) => i * 20)
-        .attr("r", 10);
-      update_group_with_data.append("text").text(d => d.title);
-      //@ts-ignore
-      // the merge returns the g, not the circle
-      update_enter.merge(update);
-      // This should happen to both old and new
-      //.attr("r", Math.random()*15 + 5)
-      */

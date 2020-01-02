@@ -46,6 +46,10 @@ h2 {
     border: 1px solid #4a9299;
 }
 
+.padded {
+    padding: 10px;
+}
+
 .ingress-button {
     background-color: #004746;
     border: 1px solid #0ff;
@@ -56,12 +60,11 @@ h2 {
     -webkit-box-shadow: inset 0 0 6px rgba(255, 255, 255, 1);
     -moz-box-shadow: inset 0 0 6px rgba(255, 255, 255, 1);
     color: #0ff;
-    display: inline;
     margin: 3px;
     padding: 2px 15px;
 }
 
-.ingress-text{
+.ingress-text {
     color: #59fbea;
     font-family: coda_regular, arial, helvetica, sans-serif;
 }
@@ -102,20 +105,21 @@ h2 {
     color: var(--l8);
 }
 
-table.compass{
+table.compass {
     margin-top: 10px;
 }
-table.compass tbody tr{
+
+table.compass tbody tr {
     height: 50px;
     width: 150px;
     text-align: center;
 }
 
-table.compass tbody tr td{
+table.compass tbody tr td {
     width: 50px;
 }
 
-td.selector{
+td.selector {
     cursor: pointer;
     background-color: #004746;
     border: 1px solid #0ff;
@@ -128,6 +132,12 @@ td.selector{
     color: #0ff;
 }
 
-div.viz{
-    
+div.viz {
+    width: 100%;
+    height: calc(100vh - 84px)
+}
+
+.debug {
+    overflow-y: scroll;
+    height: 200px;
 }

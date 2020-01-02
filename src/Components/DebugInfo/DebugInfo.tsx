@@ -1,20 +1,27 @@
 import React from 'react'
 import { Row, Col } from 'antd'
 
-const DebugInfo = (props: {selected: number, data: { x: number; y: number; title: string; key: number; }[], whichAnchor: string, valueOfSlider: number}) => {
+interface IData  { x: number; y: number; title: string; key: number; }
 
+const DebugInfo = (props: {selected: number, data: IData[], whichAnchor: string, valueOfSlider: number}) => {
+
+  const data = props.data
+  const selected = props.selected
+  const selectedPortal = data[selected]
     return (
+      <div className="ingress-frame padded">
         <Row>
         <Col span={12}>
+
       <div className="debug ingress-button">
         props:
       <ul>
           <li>Which Anchor: {props.whichAnchor}</li>
           <li>value of slider: {props.valueOfSlider}</li>
           <li>Data
-          <ul>
-              {props.data && props.data.map(((d, i) => (<li className={i === props.selected ? "selected" : "notSelected"} key={i}> {i + 1}:{d.title}</li>)))}
-            </ul>
+          <ol>
+              {data && data.map(((d, i) => (<li className={i === props.selected ? "selected" : "notSelected"} key={i}> {d.title}</li>)))}
+            </ol>
           </li>
         </ul>
       </div>
@@ -23,12 +30,13 @@ const DebugInfo = (props: {selected: number, data: { x: number; y: number; title
         <div className="debug ingress-button">
         state:
       <ul>
-          <li>Selected Value: {props.selected}</li>
-          <li>Selected Name: {props.data && props.data.filter((d,i) => i === props.selected)[0].title}</li>
+          <li>Selected Value: {selected}</li>
+          <li>Selected Name: {selectedPortal && selectedPortal.title}</li>
         </ul>
       </div>
         </Col>
       </Row>
+      </div>
     )
 
 }
