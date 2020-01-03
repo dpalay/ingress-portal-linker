@@ -26,7 +26,7 @@ interface IRawData {
 
 const directionDefault: IDirection = "West";
 const { Header, Footer, Content } = Layout;
-const initialCount = 5;
+const initialCount = rawPortals.length;
 
 const App: React.FC = () => {
   const [whichAnchor, setWhichAnchor] = useState(
@@ -117,18 +117,21 @@ const App: React.FC = () => {
                   </Col>
                 </Row>
               </div>
-              <Row type="flex" justify="center">
+              {/*
+
+                <Row type="flex" justify="center">
                 <Col>
                   <Button
                     className="ingress-button"
                     type="primary"
                     title="GenerateLinks"
                     onClick={() => setShouldGenerateLinks(true)}
-                  >
+                    >
                     {"Generate Links"}
                   </Button>
                 </Col>
               </Row>
+              */ }
               <Row>
                 <Col>
                   <PortalEntry

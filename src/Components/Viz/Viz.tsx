@@ -60,23 +60,6 @@ const Viz: React.FC<IProps> = (props: IProps) => {
       right: 50
     };
 
-    /**
-     * DEBUG INFO
-     */
-    svg.selectAll("g.debug").remove();
-    svg
-      .append("g")
-      .attr("class", "debug")
-      .attr(
-        "transform",
-        `translate(${svgRef.current.clientWidth / 2},${height / 2})`
-      )
-      .append("text")
-      .style("stroke", "var(--l8")
-      .text(
-        `Screen M-L: ${margin.left}\nScreen W - M.r: ${width - margin.right}`
-      );
-
     // get data from props
     const data = portalDataset;
     //const data = portalDataset.slice(0,val)
