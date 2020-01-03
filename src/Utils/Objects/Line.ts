@@ -6,6 +6,10 @@ class Line {
   p2: Point;
   vector: Vector;
 
+  static Slope(p1: Point, p2: Point){
+    return (p2.y - p1.y) / (p2.x - p1.x)
+  }
+
   constructor(p1: Point, p2: Point) {
     this.p1 = p1;
     this.p2 = p2;

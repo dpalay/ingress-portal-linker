@@ -1,5 +1,5 @@
 import React, { useState, useReducer, useMemo } from "react";
-import { Row, Col, Layout } from "antd";
+import { Row, Col, Layout, Button } from "antd";
 import "./App.css";
 import myClickFunction from "../../Utils/events";
 import Viz from "../Viz/Viz";
@@ -66,12 +66,16 @@ const App: React.FC = () => {
     <div>
       <Layout>
         <Header className="ingress-frame dark-back">
+          <Row type="flex">
+
+          <Button>{"Show sidebar"}</Button>
           <h2>Dave's Portal Linker</h2>
+          </Row>
         </Header>
 
         <Content className="ingress-frame dark-back">
           <Row type="flex">
-            <Col span={7}>
+            <Col span={7}> {/**TODO: Make this a Drawer at some point in the future */}
               <div className={"ingress-frame padded"}>
                 <Row>
                   <Col lg={{ span: 10 }} md={{ span: 20 }} >
@@ -106,13 +110,24 @@ const App: React.FC = () => {
                   </Col>
                 </Row>
               </div>
+              <Row type="flex" justify="center">
+                <Col>
+                <Button
+       className="ingress-button"
+       type="primary"
+       title="GenerateLinks"
+       onClick ={() => setShouldGenerateLinks(true)}
+       >
+         {"Generate Links"}
+       </Button>
+                </Col>
+              </Row>
               <Row>
                 <Col>
                   <PortalEntry 
                   text={JSON.stringify(rawPortals)} 
                   rawData={rawData} 
                   setRawData={setRawData} 
-                  setShouldGenerateLinks={setShouldGenerateLinks} 
                   />
                 </Col>
               </Row>

@@ -1,9 +1,8 @@
 import React from 'react'
 import { Row, Col } from 'antd'
+import Portal from '../../Utils/Objects/Portal'
 
-interface IData  { x: number; y: number; title: string; key: number; }
-
-const DebugInfo = (props: {shouldGenerateLinks: boolean, selected: number, data: IData[], whichAnchor: string, valueOfSlider: number}) => {
+const DebugInfo = (props: {shouldGenerateLinks: boolean, selected: number, data: Portal[], whichAnchor: string, valueOfSlider: number}) => {
 
   const {data, selected, whichAnchor, valueOfSlider, shouldGenerateLinks} = props
   const selectedPortal = data[selected]
