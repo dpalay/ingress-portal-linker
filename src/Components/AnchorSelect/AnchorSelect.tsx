@@ -5,11 +5,14 @@ type IDirection = "East" | "West" | "North" | "South"
 interface Iprops {
     which: IDirection
     , setWhich: React.Dispatch<React.SetStateAction<IDirection>>
+    , title: string
 }
 const AnchorSelect: React.FC<Iprops> = (props: Iprops) => {
 
 
     return (
+        <>
+            <div className={"ingress-text"}>{props.title}</div>
         <table className="ingress-text compass">
             <tbody>
 
@@ -30,6 +33,7 @@ const AnchorSelect: React.FC<Iprops> = (props: Iprops) => {
                 </tr>
             </tbody>
         </table>
+        </>
     )
 }
 

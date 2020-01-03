@@ -141,3 +141,9 @@ div.viz {
     overflow-y: scroll;
     height: 200px;
 }
+
+td.ingress-disabled{
+    border: 1px solid #004746;
+    color: #004746;
+    cursor: default;
+}

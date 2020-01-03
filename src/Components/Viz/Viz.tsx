@@ -10,6 +10,7 @@ type IDirection = "East" | "West" | "North" | "South";
 
 interface IProps {
   whichAnchor: IDirection;
+  whichPrimary: IDirection;
   data?: Portal[];
   setSelected: React.Dispatch<React.SetStateAction<number>>;
   shouldGenerateLinks: boolean;
@@ -38,7 +39,8 @@ const Viz: React.FC<IProps> = (props: IProps) => {
     setSelected,
     shouldGenerateLinks,
     setShouldGenerateLinks,
-    whichAnchor
+    whichAnchor,
+    whichPrimary
   } = props;
   const portalDataset = props.data || [new Portal(0, 0, "NO DATA", 0)];
 
@@ -286,7 +288,21 @@ const Viz: React.FC<IProps> = (props: IProps) => {
     }
 
     sortedAvailablePortals.sort(
-      (a, b) => b.slopeFromAnchor - a.slopeFromAnchor
+      (a, b) => {
+        switch (whichPrimary) {
+          case "East":
+          case "North":
+            return a.slopeFromAnchor - b.slopeFromAnchor
+
+          case "South":
+          case "West":
+            return b.slopeFromAnchor - a.slopeFromAnchor
+
+
+          default:
+            return 0;
+        }
+      }
     );
     console.log(sortedAvailablePortals);
 
@@ -368,7 +384,8 @@ const Viz: React.FC<IProps> = (props: IProps) => {
     portalDataset,
     setSelected,
     setShouldGenerateLinks,
-    shouldGenerateLinks
+    shouldGenerateLinks,
+    whichPrimary
   ]);
   return (
     <>

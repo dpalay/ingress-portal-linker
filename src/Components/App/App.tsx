@@ -2,8 +2,8 @@ import React, { useState, useReducer, useMemo } from "react";
 import { Row, Col, Layout, Button } from "antd";
 import "./App.css";
 import Viz from "../Viz/Viz";
-import TestControl from "../TestControl/TestControl";
 import AnchorSelect from "../AnchorSelect/AnchorSelect";
+import PrimarySelect from "../PrimarySelect/PrimarySelect";
 import rawPortals from "../../Utils/Data/data";
 import DebugInfo from "../DebugInfo/DebugInfo";
 import PortalEntry from "../PortalEntry/PortalEntry";
@@ -24,13 +24,17 @@ interface IRawData {
   image: string;
 }
 
-const directionDefault: IDirection = "West";
+const anchorDefault: IDirection = "West";
+const primaryDefault: IDirection = "North";
 const { Header, Footer, Content } = Layout;
 const initialCount = rawPortals.length;
 
 const App: React.FC = () => {
   const [whichAnchor, setWhichAnchor] = useState(
-    directionDefault as IDirection
+    anchorDefault as IDirection
+  );
+  const [whichPrimary, setWhichPrimary] = useState(
+    primaryDefault as IDirection
   );
   const [selected, setSelected] = useState(0);
   const [rawData, setRawData] = useState<IRawData[]>(rawPortals);
@@ -87,32 +91,17 @@ const App: React.FC = () => {
                 <Row>
                   <Col lg={{ span: 10 }} md={{ span: 20 }}>
                     <AnchorSelect
+                      title={"Anchor Portal"}
                       which={whichAnchor}
                       setWhich={setWhichAnchor}
                     />
                   </Col>
-                  <Col lg={{ span: 7 }} md={{ span: 10 }} sm={{ span: 20 }}>
-                    <TestControl
-                      text="Add a ball"
-                      value={value}
-                      handleclick={() => dispatch({ type: "increment" })}
-                    />
-                    <TestControl
-                      text="Add 10 balls"
-                      value={value}
-                      handleclick={() => dispatch({ type: "incrementByTen" })}
-                    />
-                  </Col>
-                  <Col lg={{ span: 7 }} md={{ span: 10 }} sm={{ span: 20 }}>
-                    <TestControl
-                      text="Remove a ball"
-                      value={value}
-                      handleclick={() => dispatch({ type: "decrement" })}
-                    />
-                    <TestControl
-                      text="Remove 10 balls"
-                      value={value}
-                      handleclick={() => dispatch({ type: "decrementByTen" })}
+                  <Col lg={{ span: 10 }} md={{ span: 20 }}>
+                    <PrimarySelect
+                      title={"Start From Direction"}
+                      which={whichPrimary}
+                      setWhich={setWhichPrimary}
+                      whichAnchor={whichAnchor}
                     />
                   </Col>
                 </Row>
@@ -157,6 +146,7 @@ const App: React.FC = () => {
               <Viz
                 data={data}
                 whichAnchor={whichAnchor}
+                whichPrimary={whichPrimary}
                 setSelected={setSelected}
                 shouldGenerateLinks={shouldGenerateLinks}
                 setShouldGenerateLinks={setShouldGenerateLinks}
