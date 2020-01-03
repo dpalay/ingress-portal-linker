@@ -1,7 +1,6 @@
 import React, { useState, useReducer, useMemo } from "react";
 import { Row, Col, Layout, Button } from "antd";
 import "./App.css";
-import myClickFunction from "../../Utils/events";
 import Viz from "../Viz/Viz";
 import TestControl from "../TestControl/TestControl";
 import AnchorSelect from "../AnchorSelect/AnchorSelect";

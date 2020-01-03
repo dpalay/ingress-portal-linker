@@ -1,12 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import "./Viz.css";
 import * as d3 from "d3";
 import { Delaunay } from "d3-delaunay";
-import { Row, Col } from "antd";
 import useResizeOberver from "../../Utils/Hooks/useResizeObserver";
-import * as util from "../../Utils/Functions/functions";
 import Portal from "../../Utils/Objects/Portal";
-import Line from "../../Utils/Objects/Line";
 import Link from "../../Utils/Objects/Link";
 
 type IDirection = "East" | "West" | "North" | "South";
@@ -29,7 +26,6 @@ const colorRange = [
   "#c124e0",
   "#9627f4"
 ];
-const [testX, testY] = [-89.567432, 42.996479];
 const Viz: React.FC<IProps> = (props: IProps) => {
   /* The useRef Hook creates a variable that "holds on" to a value across rendering
        passes. In this case it will hold our component's SVG DOM element. It's
