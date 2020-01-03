@@ -253,7 +253,7 @@ const Viz: React.FC<IProps> = (props: IProps) => {
       portal => new Link(anchor, portal)
     );
     console.log(linksToAnchor);
-   /* svg
+    /* svg
       .selectAll("line.anchorLink")
       .data(linksToAnchor)
       .join(
@@ -311,23 +311,33 @@ const Viz: React.FC<IProps> = (props: IProps) => {
     );
     console.log(sortedAvailablePortals);
 
-    const allLinks: Link[] = sortedAvailablePortals.map((p: Portal): Link => {
-      return new Link(p,anchor)
-    })
+    const allLinks: Link[] = sortedAvailablePortals.map(
+      (p: Portal): Link => {
+        return new Link(p, anchor);
+      }
+    );
 
-    console.log(allLinks)
+    console.log(allLinks);
 
-    for (let sourcePortalIndex = 1; sourcePortalIndex < sortedAvailablePortals.length; sourcePortalIndex++){
-      const sourcePortal = sortedAvailablePortals[sourcePortalIndex]
-      for (let destPortalIndex = 0; destPortalIndex < sourcePortalIndex; destPortalIndex++){
+    for (
+      let sourcePortalIndex = 1;
+      sourcePortalIndex < sortedAvailablePortals.length;
+      sourcePortalIndex++
+    ) {
+      const sourcePortal = sortedAvailablePortals[sourcePortalIndex];
+      for (
+        let destPortalIndex = 0;
+        destPortalIndex < sourcePortalIndex;
+        destPortalIndex++
+      ) {
         const destPortal = sortedAvailablePortals[destPortalIndex];
-        const tmpLink = new Link(sourcePortal, destPortal)
-        if (!allLinks.some((link) => link.intersect(tmpLink))){
-          allLinks.push(tmpLink)
+        const tmpLink = new Link(sourcePortal, destPortal);
+        if (!allLinks.some(link => link.intersect(tmpLink))) {
+          allLinks.push(tmpLink);
         }
       }
     }
-    console.log(allLinks)
+    console.log(allLinks);
     svg
       .selectAll("line.link")
       .data(allLinks)
