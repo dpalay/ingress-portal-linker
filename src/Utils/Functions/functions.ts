@@ -1,5 +1,5 @@
-import Point from "../Objects/Point"
-import Portal from "../Objects/Portal"
+import Point from "../Objects/Point";
+import Portal from "../Objects/Portal";
 import Link from "../Objects/Link";
 
 
