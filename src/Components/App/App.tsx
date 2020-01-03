@@ -29,10 +29,6 @@ const directionDefault: IDirection = "West";
 const { Header, Footer, Content } = Layout;
 const initialCount = 5;
 
-
-
-
-
 const App: React.FC = () => {
   const [whichAnchor, setWhichAnchor] = useState(
     directionDefault as IDirection
@@ -40,7 +36,6 @@ const App: React.FC = () => {
   const [selected, setSelected] = useState(0);
   const [rawData, setRawData] = useState<IRawData[]>(rawPortals);
   const [shouldGenerateLinks, setShouldGenerateLinks] = useState(false);
-
 
   const handleClickReducer = (count: number, action: { type: string }) => {
     switch (action.type) {
@@ -52,33 +47,46 @@ const App: React.FC = () => {
         return Math.max(1, count - 1);
       case "decrementByTen":
         return Math.max(1, count - 10);
-        default:
-          throw new Error();
-        }
-      };
-      const [value, dispatch] = useReducer(handleClickReducer, initialCount);
-      
-      const data = useMemo(() =>  rawData
-      .map((datum, i) => new Portal(+datum.coordinates.lng,+datum.coordinates.lat,datum.title,i))
-      .slice(0, value),[rawData,value])
+      default:
+        throw new Error();
+    }
+  };
+  const [value, dispatch] = useReducer(handleClickReducer, initialCount);
+
+  const data = useMemo(
+    () =>
+      rawData
+        .map(
+          (datum, i) =>
+            new Portal(
+              +datum.coordinates.lng,
+              +datum.coordinates.lat,
+              datum.title,
+              i
+            )
+        )
+        .slice(0, value),
+    [rawData, value]
+  );
 
   return (
     <div>
       <Layout>
         <Header className="ingress-frame dark-back">
           <Row type="flex">
-
-          <Button>{"Show sidebar"}</Button>
-          <h2>Dave's Portal Linker</h2>
+            <Button>{"Show sidebar"}</Button>
+            <h2>Dave's Portal Linker</h2>
           </Row>
         </Header>
 
         <Content className="ingress-frame dark-back">
           <Row type="flex">
-            <Col span={7}> {/**TODO: Make this a Drawer at some point in the future */}
+            <Col span={7}>
+              {" "}
+              {/**TODO: Make this a Drawer at some point in the future */}
               <div className={"ingress-frame padded"}>
                 <Row>
-                  <Col lg={{ span: 10 }} md={{ span: 20 }} >
+                  <Col lg={{ span: 10 }} md={{ span: 20 }}>
                     <AnchorSelect
                       which={whichAnchor}
                       setWhich={setWhichAnchor}
@@ -112,22 +120,22 @@ const App: React.FC = () => {
               </div>
               <Row type="flex" justify="center">
                 <Col>
-                <Button
-       className="ingress-button"
-       type="primary"
-       title="GenerateLinks"
-       onClick ={() => setShouldGenerateLinks(true)}
-       >
-         {"Generate Links"}
-       </Button>
+                  <Button
+                    className="ingress-button"
+                    type="primary"
+                    title="GenerateLinks"
+                    onClick={() => setShouldGenerateLinks(true)}
+                  >
+                    {"Generate Links"}
+                  </Button>
                 </Col>
               </Row>
               <Row>
                 <Col>
-                  <PortalEntry 
-                  text={JSON.stringify(rawPortals)} 
-                  rawData={rawData} 
-                  setRawData={setRawData} 
+                  <PortalEntry
+                    text={JSON.stringify(rawPortals)}
+                    rawData={rawData}
+                    setRawData={setRawData}
                   />
                 </Col>
               </Row>

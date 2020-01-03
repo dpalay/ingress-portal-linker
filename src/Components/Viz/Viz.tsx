@@ -298,12 +298,13 @@ const Viz: React.FC<IProps> = (props: IProps) => {
       case "North":
       case "South":
         sortedAvailablePortals.forEach(p => (p.specialSlope = anchor));
-      break;
-      default: break;
+        break;
+      default:
+        break;
     }
-    
+
     sortedAvailablePortals.sort(
-      (a, b) =>  b.slopeFromAnchor - a.slopeFromAnchor
+      (a, b) => b.slopeFromAnchor - a.slopeFromAnchor
     );
     console.log(sortedAvailablePortals);
 

@@ -40,8 +40,8 @@ const PortalEntry = (props: IProps) => {
         type="primary"
         title="clickme!"
         onClick={() => {
-            //Todo:  Validate input
-            props.setRawData(JSON.parse(inputText))
+          //Todo:  Validate input
+          props.setRawData(JSON.parse(inputText));
         }}
       >
         {"Load JSON portal data!"}

@@ -134,7 +134,7 @@ td.selector {
 
 div.viz {
     width: 100%;
-    height: calc(100vh - 84px)
+    height: calc(100vh - 84px);
 }
 
 .debug {
