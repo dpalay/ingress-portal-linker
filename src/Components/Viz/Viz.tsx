@@ -240,6 +240,7 @@ const Viz: React.FC<IProps> = (props: IProps) => {
         case "South":
           return prev.y <= cur.y ? prev : cur;
         case "North":
+        default:
           return prev.y <= cur.y ? cur : prev;
       }
     });
@@ -252,19 +253,21 @@ const Viz: React.FC<IProps> = (props: IProps) => {
       portal => new Link(anchor, portal)
     );
     console.log(linksToAnchor);
-    svg
-      .selectAll("line.link")
+    /* svg
+      .selectAll("line.anchorLink")
       .data(linksToAnchor)
       .join(
         enter => {
           return enter
             .append("line")
-            .attr("class", "link")
+            .attr("class", "anchorLink")
             .attr("x1", x(anchor.x))
             .attr("x2", x(anchor.x))
             .attr("y1", y(anchor.y))
             .attr("y2", y(anchor.y))
             .style("stroke", "red")
+            .style("stroke-width",5)
+            .style("opacity", .5)
             .call(enter =>
               enter
                 .transition()
@@ -288,7 +291,7 @@ const Viz: React.FC<IProps> = (props: IProps) => {
           );
         }
       );
-
+*/
     console.log(sortedAvailablePortals);
     switch (whichAnchor) {
       case "West":
@@ -308,26 +311,69 @@ const Viz: React.FC<IProps> = (props: IProps) => {
     );
     console.log(sortedAvailablePortals);
 
-    /*
-      (() => {switch (whichAnchor){
-        case "West":
-        case "East":
-          return data.filter((portal) => portal.key !== anchor.key).sort((portA, portB) => {
-          switch (whichAnchor){
-            case "West":
-              return portB.y - portA.y;
-            case "East":
-              return portA.y - portB.y;
-            default: return 0;
-          }
-        })
-        case "North":
-        case "South":
-          
-        default: return [new Portal(0,0,"No Data", 0)];
-    }})()*/
+    const allLinks: Link[] = sortedAvailablePortals.map(
+      (p: Portal): Link => {
+        return new Link(p, anchor);
+      }
+    );
 
-    console.log(sortedAvailablePortals);
+    console.log(allLinks);
+
+    for (
+      let sourcePortalIndex = 1;
+      sourcePortalIndex < sortedAvailablePortals.length;
+      sourcePortalIndex++
+    ) {
+      const sourcePortal = sortedAvailablePortals[sourcePortalIndex];
+      for (
+        let destPortalIndex = 0;
+        destPortalIndex < sourcePortalIndex;
+        destPortalIndex++
+      ) {
+        const destPortal = sortedAvailablePortals[destPortalIndex];
+        const tmpLink = new Link(sourcePortal, destPortal);
+        if (!allLinks.some(link => link.intersect(tmpLink))) {
+          allLinks.push(tmpLink);
+        }
+      }
+    }
+    console.log(allLinks);
+    svg
+      .selectAll("line.link")
+      .data(allLinks)
+      .join(
+        enter => {
+          return enter
+            .append("line")
+            .attr("class", "link")
+            .attr("x1", x(anchor.x))
+            .attr("x2", x(anchor.x))
+            .attr("y1", y(anchor.y))
+            .attr("y2", y(anchor.y))
+            .style("stroke", "blue")
+            .call(enter =>
+              enter
+                .transition()
+                //.delay((d, i) => i * 10)
+                .duration(500)
+                .attr("x1", d => x(d.line.p1.x))
+                .attr("x2", d => x(d.line.p2.x))
+                .attr("y1", d => y(d.line.p1.y))
+                .attr("y2", d => y(d.line.p2.y))
+            );
+        },
+        update => {
+          return update.call(update =>
+            update
+              .transition()
+              .duration(500)
+              .attr("x1", d => x(d.line.p1.x))
+              .attr("x2", d => x(d.line.p2.x))
+              .attr("y1", d => y(d.line.p1.y))
+              .attr("y2", d => y(d.line.p2.y))
+          );
+        }
+      );
 
     //d3.selectAll<d3.BaseType, Portal>("circle").sort((a,b) => a.y-b.y)
     //d3.selectAll<d3.BaseType,Portal>("circle").order()
