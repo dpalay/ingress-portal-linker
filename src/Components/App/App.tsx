@@ -1,5 +1,5 @@
-import React, { useState, useReducer } from "react";
-import { Row, Col, Layout } from "antd";
+import React, { useState, useReducer, useMemo } from "react";
+import { Row, Col, Layout, Button } from "antd";
 import "./App.css";
 import myClickFunction from "../../Utils/events";
 import Viz from "../Viz/Viz";
@@ -8,14 +8,9 @@ import AnchorSelect from "../AnchorSelect/AnchorSelect";
 import rawPortals from "../../Utils/Data/data";
 import DebugInfo from "../DebugInfo/DebugInfo";
 import PortalEntry from "../PortalEntry/PortalEntry";
+import Portal from "../../Utils/Objects/Portal";
 
 type IDirection = "East" | "West" | "North" | "South";
-interface IData {
-  x: number;
-  y: number;
-  title: string;
-  key: number;
-}
 interface IRawData {
   guid: string;
   title: string;
@@ -34,16 +29,13 @@ const directionDefault: IDirection = "West";
 const { Header, Footer, Content } = Layout;
 const initialCount = 5;
 
-
-
-
-
 const App: React.FC = () => {
   const [whichAnchor, setWhichAnchor] = useState(
     directionDefault as IDirection
   );
   const [selected, setSelected] = useState(0);
   const [rawData, setRawData] = useState<IRawData[]>(rawPortals);
+  const [shouldGenerateLinks, setShouldGenerateLinks] = useState(false);
 
   const handleClickReducer = (count: number, action: { type: string }) => {
     switch (action.type) {
@@ -59,38 +51,48 @@ const App: React.FC = () => {
         throw new Error();
     }
   };
-
   const [value, dispatch] = useReducer(handleClickReducer, initialCount);
 
-  const data = rawData
-    .map((datum, i) => {
-      return {
-        x: +datum.coordinates.lng,
-        y: +datum.coordinates.lat,
-        title: datum.title,
-        key: i
-      };
-    })
-    .slice(0, value);
+  const data = useMemo(
+    () =>
+      rawData
+        .map(
+          (datum, i) =>
+            new Portal(
+              +datum.coordinates.lng,
+              +datum.coordinates.lat,
+              datum.title,
+              i
+            )
+        )
+        .slice(0, value),
+    [rawData, value]
+  );
+
   return (
     <div>
       <Layout>
         <Header className="ingress-frame dark-back">
-          <h2>Dave's Portal Linker</h2>
+          <Row type="flex">
+            <Button>{"Show sidebar"}</Button>
+            <h2>Dave's Portal Linker</h2>
+          </Row>
         </Header>
 
         <Content className="ingress-frame dark-back">
           <Row type="flex">
             <Col span={7}>
+              {" "}
+              {/**TODO: Make this a Drawer at some point in the future */}
               <div className={"ingress-frame padded"}>
                 <Row>
-                  <Col lg={{span: 10}} md={{span:20}} >
+                  <Col lg={{ span: 10 }} md={{ span: 20 }}>
                     <AnchorSelect
                       which={whichAnchor}
                       setWhich={setWhichAnchor}
                     />
                   </Col>
-                  <Col lg={{span: 7}} md={{span: 10}} sm={{span: 20}}>
+                  <Col lg={{ span: 7 }} md={{ span: 10 }} sm={{ span: 20 }}>
                     <TestControl
                       text="Add a ball"
                       value={value}
@@ -102,7 +104,7 @@ const App: React.FC = () => {
                       handleclick={() => dispatch({ type: "incrementByTen" })}
                     />
                   </Col>
-                  <Col lg={{span: 7}} md={{span: 10}} sm={{span: 20}}>
+                  <Col lg={{ span: 7 }} md={{ span: 10 }} sm={{ span: 20 }}>
                     <TestControl
                       text="Remove a ball"
                       value={value}
@@ -116,9 +118,25 @@ const App: React.FC = () => {
                   </Col>
                 </Row>
               </div>
+              <Row type="flex" justify="center">
+                <Col>
+                  <Button
+                    className="ingress-button"
+                    type="primary"
+                    title="GenerateLinks"
+                    onClick={() => setShouldGenerateLinks(true)}
+                  >
+                    {"Generate Links"}
+                  </Button>
+                </Col>
+              </Row>
               <Row>
                 <Col>
-                  <PortalEntry text={JSON.stringify(rawPortals)} rawData={rawData} setRawData={setRawData}/>
+                  <PortalEntry
+                    text={JSON.stringify(rawPortals)}
+                    rawData={rawData}
+                    setRawData={setRawData}
+                  />
                 </Col>
               </Row>
               <Row>
@@ -128,6 +146,7 @@ const App: React.FC = () => {
                     data={data}
                     valueOfSlider={value}
                     whichAnchor={whichAnchor}
+                    shouldGenerateLinks={shouldGenerateLinks}
                   ></DebugInfo>
                 </Col>
               </Row>
@@ -137,6 +156,8 @@ const App: React.FC = () => {
                 data={data}
                 whichAnchor={whichAnchor}
                 setSelected={setSelected}
+                shouldGenerateLinks={shouldGenerateLinks}
+                setShouldGenerateLinks={setShouldGenerateLinks}
               />
             </Col>
           </Row>

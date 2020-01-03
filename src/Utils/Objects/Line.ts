@@ -6,6 +6,10 @@ class Line {
   p2: Point;
   vector: Vector;
 
+  static Slope(p1: Point, p2: Point) {
+    return (p2.y - p1.y) / (p2.x - p1.x);
+  }
+
   constructor(p1: Point, p2: Point) {
     this.p1 = p1;
     this.p2 = p2;
@@ -37,14 +41,14 @@ If there is an intersection, then we must check that the intersection actually l
 Hence, 0<lambda<1 && 0<gamma<1 indicates that the two lines intersect!*/
 
   intersect(otherLine: Line): boolean {
-    let a = this.p1.x
-    let b = this.p1.y
-    let c = this.p2.x
-    let d = this.p2.y
-    let p = otherLine.p1.x
-    let q = otherLine.p1.y
-    let r = otherLine.p2.x
-    let s = otherLine.p2.y
+    let a = this.p1.x;
+    let b = this.p1.y;
+    let c = this.p2.x;
+    let d = this.p2.y;
+    let p = otherLine.p1.x;
+    let q = otherLine.p1.y;
+    let r = otherLine.p2.x;
+    let s = otherLine.p2.y;
 
     var det, gamma, lambda;
     det = (c - a) * (s - q) - (r - p) * (d - b);
@@ -53,7 +57,7 @@ Hence, 0<lambda<1 && 0<gamma<1 indicates that the two lines intersect!*/
     } else {
       lambda = ((s - q) * (r - a) + (p - r) * (s - b)) / det;
       gamma = ((b - d) * (r - a) + (c - a) * (s - b)) / det;
-      return 0 < lambda && lambda < 1 && (0 < gamma && gamma < 1);
+      return 0 < lambda && lambda < 1 && 0 < gamma && gamma < 1;
     }
   }
 }
