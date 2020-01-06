@@ -13,8 +13,6 @@ interface IProps {
   whichPrimary: IDirection;
   data?: Portal[];
   setSelected: React.Dispatch<React.SetStateAction<number>>;
-  shouldGenerateLinks: boolean;
-  setShouldGenerateLinks: React.Dispatch<React.SetStateAction<boolean>>;
   anchor: Portal;
   allLinks: Link[];
 }
@@ -39,8 +37,6 @@ const Viz: React.FC<IProps> = (props: IProps) => {
 
   const {
     setSelected,
-    shouldGenerateLinks,
-    setShouldGenerateLinks,
     whichAnchor,
     whichPrimary,
     anchor,
