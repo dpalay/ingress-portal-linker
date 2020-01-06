@@ -15,6 +15,8 @@ interface IProps {
   setSelected: React.Dispatch<React.SetStateAction<number>>;
   shouldGenerateLinks: boolean;
   setShouldGenerateLinks: React.Dispatch<React.SetStateAction<boolean>>;
+  anchor: Portal;
+  allLinks: Link[];
 }
 const colorRange = [
   "#333",
@@ -40,9 +42,10 @@ const Viz: React.FC<IProps> = (props: IProps) => {
     shouldGenerateLinks,
     setShouldGenerateLinks,
     whichAnchor,
-    whichPrimary
+    whichPrimary,
+    anchor,
+    allLinks
   } = props;
-  const portalDataset = props.data || [new Portal(0, 0, "NO DATA", 0)];
 
   useEffect(() => {
     if (!svgRef.current) return;
@@ -63,12 +66,12 @@ const Viz: React.FC<IProps> = (props: IProps) => {
     };
 
     // get data from props
-    const data = portalDataset;
+    const data = props.data || [new Portal(0, 0, "NO DATA", 0)];;
     //const data = portalDataset.slice(0,val)
 
     // Typescript stuff
-    let xExtent = d3.extent(portalDataset, d => d.x);
-    let yExtent = d3.extent(portalDataset, d => d.y);
+    let xExtent = d3.extent(data, d => d.x);
+    let yExtent = d3.extent(data, d => d.y);
 
     //setup ranges
     let x = d3
@@ -108,7 +111,7 @@ const Viz: React.FC<IProps> = (props: IProps) => {
 
     circles
       .selectAll("circle")
-      .data(portalDataset)
+      .data(data)
       .join(
         enter => {
           return (
@@ -212,127 +215,7 @@ const Viz: React.FC<IProps> = (props: IProps) => {
     //if (shouldGenerateLinks) {
 
     // Find Anchor portal
-    const anchor: Portal = data.reduce((prev, cur, i, arr) => {
-      switch (whichAnchor) {
-        case "West":
-          return prev.x <= cur.x ? prev : cur;
-        case "East":
-          return prev.x <= cur.x ? cur : prev;
-        case "South":
-          return prev.y <= cur.y ? prev : cur;
-        case "North":
-        default:
-          return prev.y <= cur.y ? cur : prev;
-      }
-    });
-    console.log(anchor);
-
-    const sortedAvailablePortals = data.filter(
-      portal => portal.key !== anchor.key
-    );
-    const linksToAnchor = sortedAvailablePortals.map(
-      portal => new Link(anchor, portal)
-    );
-    console.log(linksToAnchor);
-    /* svg
-      .selectAll("line.anchorLink")
-      .data(linksToAnchor)
-      .join(
-        enter => {
-          return enter
-            .append("line")
-            .attr("class", "anchorLink")
-            .attr("x1", x(anchor.x))
-            .attr("x2", x(anchor.x))
-            .attr("y1", y(anchor.y))
-            .attr("y2", y(anchor.y))
-            .style("stroke", "red")
-            .style("stroke-width",5)
-            .style("opacity", .5)
-            .call(enter =>
-              enter
-                .transition()
-                //.delay((d, i) => i * 10)
-                .duration(500)
-                .attr("x1", d => x(d.line.p1.x))
-                .attr("x2", d => x(d.line.p2.x))
-                .attr("y1", d => y(d.line.p1.y))
-                .attr("y2", d => y(d.line.p2.y))
-            );
-        },
-        update => {
-          return update.call(update =>
-            update
-              .transition()
-              .duration(500)
-              .attr("x1", d => x(d.line.p1.x))
-              .attr("x2", d => x(d.line.p2.x))
-              .attr("y1", d => y(d.line.p1.y))
-              .attr("y2", d => y(d.line.p2.y))
-          );
-        }
-      );
-*/
-    console.log(sortedAvailablePortals);
-    switch (whichAnchor) {
-      case "West":
-      case "East":
-        sortedAvailablePortals.forEach(p => (p.slope = anchor));
-        break;
-      case "North":
-      case "South":
-        sortedAvailablePortals.forEach(p => (p.specialSlope = anchor));
-        break;
-      default:
-        break;
-    }
-
-    sortedAvailablePortals.sort(
-      (a, b) => {
-        switch (whichPrimary) {
-          case "East":
-          case "North":
-            return a.slopeFromAnchor - b.slopeFromAnchor
-
-          case "South":
-          case "West":
-            return b.slopeFromAnchor - a.slopeFromAnchor
-
-
-          default:
-            return 0;
-        }
-      }
-    );
-    console.log(sortedAvailablePortals);
-
-    const allLinks: Link[] = sortedAvailablePortals.map(
-      (p: Portal): Link => {
-        return new Link(p, anchor);
-      }
-    );
-
-    console.log(allLinks);
-
-    for (
-      let sourcePortalIndex = 1;
-      sourcePortalIndex < sortedAvailablePortals.length;
-      sourcePortalIndex++
-    ) {
-      const sourcePortal = sortedAvailablePortals[sourcePortalIndex];
-      for (
-        let destPortalIndex = 0;
-        destPortalIndex < sourcePortalIndex;
-        destPortalIndex++
-      ) {
-        const destPortal = sortedAvailablePortals[destPortalIndex];
-        const tmpLink = new Link(sourcePortal, destPortal);
-        if (!allLinks.some(link => link.intersect(tmpLink))) {
-          allLinks.push(tmpLink);
-        }
-      }
-    }
-    console.log(allLinks);
+    
     svg
       .selectAll("line.link")
       .data(allLinks)
@@ -376,17 +259,8 @@ const Viz: React.FC<IProps> = (props: IProps) => {
 
     //
 
-    setShouldGenerateLinks(false);
     // }
-  }, [
-    whichAnchor,
-    dimensions,
-    portalDataset,
-    setSelected,
-    setShouldGenerateLinks,
-    shouldGenerateLinks,
-    whichPrimary
-  ]);
+  }, [whichAnchor, dimensions, whichPrimary, props.data, allLinks, anchor.x, anchor.y]);
   return (
     <>
       <div className="viz" ref={wrapperRef}>

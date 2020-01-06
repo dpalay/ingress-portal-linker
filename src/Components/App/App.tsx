@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useMemo } from "react";
+import React, { useState, useReducer, useMemo, useEffect } from "react";
 import { Row, Col, Layout, Button } from "antd";
 import "./App.css";
 import Viz from "../Viz/Viz";
@@ -8,6 +8,8 @@ import rawPortals from "../../Utils/Data/data";
 import DebugInfo from "../DebugInfo/DebugInfo";
 import PortalEntry from "../PortalEntry/PortalEntry";
 import Portal from "../../Utils/Objects/Portal";
+import CardResults from "../CardResults/CardResults";
+import Link from "../../Utils/Objects/Link";
 
 type IDirection = "East" | "West" | "North" | "South";
 interface IRawData {
@@ -55,8 +57,8 @@ const App: React.FC = () => {
     }
   };
   const [value, dispatch] = useReducer(handleClickReducer, initialCount);
-
-  const data = useMemo(
+  
+  const data: Portal[] = useMemo(
     () =>
       rawData
         .map(
@@ -71,6 +73,104 @@ const App: React.FC = () => {
         .slice(0, value),
     [rawData, value]
   );
+
+  const anchor: Portal = useMemo(() => data.reduce((prev, cur, i, arr) => {
+    switch (whichAnchor) {
+      case "West":
+        return prev.x <= cur.x ? prev : cur;
+      case "East":
+        return prev.x <= cur.x ? cur : prev;
+      case "South":
+        return prev.y <= cur.y ? prev : cur;
+      case "North":
+      default:
+        return prev.y <= cur.y ? cur : prev;
+    }
+  }), [data,whichAnchor])
+
+  const [allLinks, setAllLinks] = useState<Link[]>([])
+
+
+  useEffect(() => {
+    console.log("data")
+    console.log(data)
+
+    const sortedAvailablePortals = data.filter(
+      portal => portal.key !== anchor.key
+    );
+
+    console.log("anchor")
+    console.log(anchor)
+    console.log("allAvailablePortals")
+    console.log(sortedAvailablePortals)
+
+    switch (whichAnchor) {
+      case "West":
+      case "East":
+        sortedAvailablePortals.forEach(p => (p.slope = anchor));
+        break;
+      case "North":
+      case "South":
+        sortedAvailablePortals.forEach(p => (p.specialSlope = anchor));
+        break;
+      default:
+        break;
+    }
+
+    sortedAvailablePortals.sort(
+      (a, b) => {
+        switch (whichPrimary) {
+          case "East":
+          case "North":
+            return a.slopeFromAnchor - b.slopeFromAnchor
+
+          case "South":
+          case "West":
+            return b.slopeFromAnchor - a.slopeFromAnchor
+
+
+          default:
+            return 0;
+        }
+      }
+    );
+    
+    console.log("sortedAvailablePortals")
+    console.log(sortedAvailablePortals)
+
+    let tmpAllLinks = sortedAvailablePortals.map(
+      (p: Portal): Link => {
+        return new Link(p, anchor);
+      }
+    );
+    setAllLinks(tmpAllLinks)
+
+    console.log("AllLinks")
+    console.log(allLinks)
+    console.log(tmpAllLinks)
+
+    for (
+      let sourcePortalIndex = 1;
+      sourcePortalIndex < sortedAvailablePortals.length;
+      sourcePortalIndex++
+    ) {
+      //console.log(`SourcePIndex: ${sourcePortalIndex}`)
+      const sourcePortal = sortedAvailablePortals[sourcePortalIndex];
+      for (
+        let destPortalIndex = 0;
+        destPortalIndex < sourcePortalIndex;
+        destPortalIndex++
+        ) {
+        const destPortal = sortedAvailablePortals[destPortalIndex];
+        const tmpLink = new Link(sourcePortal, destPortal);
+        if (!tmpAllLinks.some(link => link.intersect(tmpLink))) {
+          tmpAllLinks.push(tmpLink);
+        }
+      }
+    }
+    console.log(tmpAllLinks)
+    setAllLinks(tmpAllLinks);
+  }, [data, whichAnchor, whichPrimary])
 
   return (
     <div>
@@ -106,21 +206,6 @@ const App: React.FC = () => {
                   </Col>
                 </Row>
               </div>
-              {/*
-
-                <Row type="flex" justify="center">
-                <Col>
-                  <Button
-                    className="ingress-button"
-                    type="primary"
-                    title="GenerateLinks"
-                    onClick={() => setShouldGenerateLinks(true)}
-                    >
-                    {"Generate Links"}
-                  </Button>
-                </Col>
-              </Row>
-              */ }
               <Row>
                 <Col>
                   <PortalEntry
@@ -128,6 +213,11 @@ const App: React.FC = () => {
                     rawData={rawData}
                     setRawData={setRawData}
                   />
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+
                 </Col>
               </Row>
               <Row>
@@ -150,6 +240,9 @@ const App: React.FC = () => {
                 setSelected={setSelected}
                 shouldGenerateLinks={shouldGenerateLinks}
                 setShouldGenerateLinks={setShouldGenerateLinks}
+                allLinks={allLinks}
+                anchor={anchor}
+
               />
             </Col>
           </Row>
