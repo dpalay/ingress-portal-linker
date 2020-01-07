@@ -256,7 +256,7 @@ const Viz: React.FC<IProps> = (props: IProps) => {
     //
 
     // }
-  }, [whichAnchor, dimensions, whichPrimary, props.data, allLinks, anchor.x, anchor.y]);
+  }, [whichAnchor, dimensions, whichPrimary, props.data, allLinks, anchor.x, anchor.y, setSelected]);
   return (
     <>
       <div className="viz" ref={wrapperRef}>

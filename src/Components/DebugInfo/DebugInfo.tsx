@@ -3,7 +3,6 @@ import { Row, Col } from "antd";
 import Portal from "../../Utils/Objects/Portal";
 
 const DebugInfo = (props: {
-  shouldGenerateLinks: boolean;
   selected: number;
   data: Portal[];
   whichAnchor: string;
@@ -13,8 +12,7 @@ const DebugInfo = (props: {
     data,
     selected,
     whichAnchor,
-    valueOfSlider,
-    shouldGenerateLinks
+    valueOfSlider
   } = props;
   const selectedPortal = data[selected];
 
@@ -27,9 +25,6 @@ const DebugInfo = (props: {
             <ul>
               <li>Which Anchor: {whichAnchor}</li>
               <li>value of slider: {valueOfSlider}</li>
-              <li>
-                Should generate links?: {shouldGenerateLinks ? "Yep!" : "Nope"}
-              </li>
               <li>
                 Data
                 <ol>

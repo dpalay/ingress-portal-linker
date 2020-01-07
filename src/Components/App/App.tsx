@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { Row, Col, Layout, Button } from "antd";
 import "./App.css";
 import Viz from "../Viz/Viz";
@@ -12,6 +12,7 @@ import CardResults from "../CardResults/CardResults";
 import Link from "../../Utils/Objects/Link";
 
 type IDirection = "East" | "West" | "North" | "South";
+interface ICompiledPortal { portal: Portal, linksFrom: Link[], linksTo: Link[], numKeys: number }
 interface IRawData {
   guid: string;
   title: string;
@@ -30,6 +31,7 @@ const anchorDefault: IDirection = "West";
 const primaryDefault: IDirection = "North";
 const { Header, Footer, Content } = Layout;
 const initialCount = rawPortals.length;
+//const initialCount = 5
 
 const App: React.FC = () => {
   const [whichAnchor, setWhichAnchor] = useState(
@@ -40,24 +42,25 @@ const App: React.FC = () => {
   );
   const [selected, setSelected] = useState(0);
   const [rawData, setRawData] = useState<IRawData[]>(rawPortals);
-  const [shouldGenerateLinks, setShouldGenerateLinks] = useState(false);
 
-  const handleClickReducer = (count: number, action: { type: string }) => {
-    switch (action.type) {
-      case "increment":
-        return Math.min(rawData.length, count + 1);
-      case "incrementByTen":
-        return Math.min(rawData.length, count + 10);
-      case "decrement":
-        return Math.max(1, count - 1);
-      case "decrementByTen":
-        return Math.max(1, count - 10);
-      default:
-        throw new Error();
-    }
-  };
-  const [value, dispatch] = useReducer(handleClickReducer, initialCount);
-  
+  /*
+    const handleClickReducer = (count: number, action: { type: string }) => {
+      switch (action.type) {
+        case "increment":
+          return Math.min(rawData.length, count + 1);
+        case "incrementByTen":
+          return Math.min(rawData.length, count + 10);
+        case "decrement":
+          return Math.max(1, count - 1);
+        case "decrementByTen":
+          return Math.max(1, count - 10);
+        default:
+          throw new Error();
+      }
+    };
+    const [value, dispatch] = useReducer(handleClickReducer, initialCount);
+    */
+  const value = initialCount;
   const data: Portal[] = useMemo(
     () =>
       rawData
@@ -74,40 +77,38 @@ const App: React.FC = () => {
     [rawData, value]
   );
 
-  const anchor: Portal = useMemo(() => data.reduce((prev, cur, i, arr) => {
-    switch (whichAnchor) {
-      case "West":
-        return prev.x <= cur.x ? prev : cur;
-      case "East":
-        return prev.x <= cur.x ? cur : prev;
-      case "South":
-        return prev.y <= cur.y ? prev : cur;
-      case "North":
-      default:
-        return prev.y <= cur.y ? cur : prev;
-    }
-  }), [data,whichAnchor])
 
-  const [allLinks, setAllLinks] = useState<Link[]>([])
+  //  const [allLinks, setAllLinks] = useState<Link[]>([])
 
 
-  useEffect(() => {
-    console.log("data")
-    console.log(data)
+  const [compiledPortalInfo, allLinks, anchor] = useMemo<[ICompiledPortal[], Link[], Portal]>(() => {
+
+    let anchor: Portal = data.reduce((prev, cur) => {
+      switch (whichAnchor) {
+        case "West":
+          return prev.x <= cur.x ? prev : cur;
+        case "East":
+          return prev.x <= cur.x ? cur : prev;
+        case "South":
+          return prev.y <= cur.y ? prev : cur;
+        case "North":
+        default:
+          return prev.y <= cur.y ? cur : prev;
+      }
+    });
 
     const sortedAvailablePortals = data.filter(
       portal => portal.key !== anchor.key
     );
 
-    console.log("anchor")
-    console.log(anchor)
-    console.log("allAvailablePortals")
-    console.log(sortedAvailablePortals)
-
     switch (whichAnchor) {
-      case "West":
       case "East":
         sortedAvailablePortals.forEach(p => (p.slope = anchor));
+        break;
+      case "West":
+        sortedAvailablePortals.forEach(p => (p.slope = anchor));
+        // West is special due to geography
+        sortedAvailablePortals.forEach(p => (p.slopeFromAnchor *= -1));
         break;
       case "North":
       case "South":
@@ -122,32 +123,31 @@ const App: React.FC = () => {
         switch (whichPrimary) {
           case "East":
           case "North":
-            return a.slopeFromAnchor - b.slopeFromAnchor
+            return a.slopeFromAnchor - b.slopeFromAnchor;
 
-          case "South":
           case "West":
-            return b.slopeFromAnchor - a.slopeFromAnchor
-
+          case "South":
+            return b.slopeFromAnchor - a.slopeFromAnchor;
 
           default:
             return 0;
         }
       }
     );
-    
-    console.log("sortedAvailablePortals")
-    console.log(sortedAvailablePortals)
 
-    let tmpAllLinks = sortedAvailablePortals.map(
-      (p: Portal): Link => {
-        return new Link(p, anchor);
-      }
-    );
-    setAllLinks(tmpAllLinks)
+    let compiledPortalInfo: ICompiledPortal[] =
+      [{ portal: anchor, linksFrom: [], linksTo: [], numKeys: 0 }, ...sortedAvailablePortals.map((p: Portal) => { return { portal: p, linksFrom: [], linksTo: [], numKeys: 0 }; })];
 
-    console.log("AllLinks")
-    console.log(allLinks)
-    console.log(tmpAllLinks)
+    let tmpAllLinks: Link[] = [];
+
+    sortedAvailablePortals.forEach((p: Portal, i: number) => {
+      let tmpLink = new Link(p, anchor);
+      tmpAllLinks.push(tmpLink);
+      compiledPortalInfo[0].linksTo.push(tmpLink);
+      compiledPortalInfo[0].numKeys++;
+      compiledPortalInfo[i + 1].linksFrom.push(tmpLink);
+    });
+
 
     for (
       let sourcePortalIndex = 1;
@@ -160,17 +160,23 @@ const App: React.FC = () => {
         let destPortalIndex = 0;
         destPortalIndex < sourcePortalIndex;
         destPortalIndex++
-        ) {
+      ) {
         const destPortal = sortedAvailablePortals[destPortalIndex];
         const tmpLink = new Link(sourcePortal, destPortal);
         if (!tmpAllLinks.some(link => link.intersect(tmpLink))) {
           tmpAllLinks.push(tmpLink);
+          compiledPortalInfo[sourcePortalIndex + 1].linksFrom.push(tmpLink);
+          compiledPortalInfo[destPortalIndex + 1].linksTo.push(tmpLink);
+          compiledPortalInfo[destPortalIndex + 1].numKeys++;
         }
       }
     }
-    console.log(tmpAllLinks)
-    setAllLinks(tmpAllLinks);
-  }, [data, whichAnchor, whichPrimary])
+
+    return [compiledPortalInfo, tmpAllLinks, anchor];
+  }
+
+    , [data, whichAnchor, whichPrimary]);
+
 
   return (
     <div>
@@ -178,7 +184,7 @@ const App: React.FC = () => {
         <Header className="ingress-frame dark-back">
           <Row type="flex">
             <Button>{"Show sidebar"}</Button>
-            <h2>Dave's Portal Linker</h2>
+            <h2>Dave&apos;s Portal Linker</h2>
           </Row>
         </Header>
 
@@ -217,8 +223,9 @@ const App: React.FC = () => {
               </Row>
               <Row>
                 <Col>
-
+                  <CardResults compiledPortals={compiledPortalInfo} />
                 </Col>
+
               </Row>
               <Row>
                 <Col>
@@ -227,7 +234,6 @@ const App: React.FC = () => {
                     data={data}
                     valueOfSlider={value}
                     whichAnchor={whichAnchor}
-                    shouldGenerateLinks={shouldGenerateLinks}
                   ></DebugInfo>
                 </Col>
               </Row>
@@ -238,8 +244,6 @@ const App: React.FC = () => {
                 whichAnchor={whichAnchor}
                 whichPrimary={whichPrimary}
                 setSelected={setSelected}
-                shouldGenerateLinks={shouldGenerateLinks}
-                setShouldGenerateLinks={setShouldGenerateLinks}
                 allLinks={allLinks}
                 anchor={anchor}
 
