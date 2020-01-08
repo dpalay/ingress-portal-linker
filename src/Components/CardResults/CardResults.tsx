@@ -1,8 +1,8 @@
 import React, {useState} from 'react'
-import PortalCard from '../PortalCard/PortalCard';
 import Portal from '../../Utils/Objects/Portal';
 import Link from '../../Utils/Objects/Link';
-import { Row, Col, Tree } from 'antd';
+import {Tree, Icon } from 'antd';
+import {  AntTreeNodeCheckedEvent, AntTreeNodeExpandedEvent } from 'antd/lib/tree/Tree';
 
 interface ICompiledPortal { portal: Portal, linksFrom: Link[], linksTo: Link[], numKeys: number }
 interface Iprops {
@@ -14,39 +14,43 @@ const {TreeNode} = Tree
 const CardResults: React.FC<Iprops> = (props: Iprops) => {
     const {compiledPortals} = props;
     const [expandedKeys, setExpandedKeys] = useState<string[]>([])
-    const [selectedKeys, setSelectedKeys] = useState<string[]>([])
     const [checkedKeys, setCheckedKeys] = useState<string[]>([])
-    const [autoExpandParent, setAutoExpandParent] = useState(true)
 
+
+    const onExpand = (expandedKeys: string[], info:AntTreeNodeExpandedEvent) => {
+        console.log('onExpand', expandedKeys);
+        setExpandedKeys(expandedKeys)
+      };
     
-    
-const onCheck = (checkedKeys: []) => {
-    console.log('onCheck', checkedKeys);
-    setCheckedKeys(checkedKeys);
+const onCheck = (checkedKeys: string[] , e: AntTreeNodeCheckedEvent) => {
+        console.log('onCheck', checkedKeys);
+        console.log('onCheck', e);
+        setCheckedKeys(checkedKeys);
   };
+
 
 const  onSelect = (selectedKeys: string[], info: any) => {
     console.log('onSelect', info);
     console.log('onSelect', selectedKeys);
-    //setSelectedKeys( selectedKeys );
+    setExpandedKeys( [...selectedKeys,...expandedKeys] );
   };
 
     return (
-        <div className={"ingress-frame"} style={{overflow: "scroll", maxHeight:"400px"}}>
+        <div  style={{background: "white", overflow: "scroll", maxHeight:"400px"}}>
             <Tree 
-            defaultExpandAll={false}
+            defaultExpandAll={true}
             checkable
-            //onExpand={onExpand}
+            onExpand={onExpand}
             expandedKeys={expandedKeys}
-            autoExpandParent={autoExpandParent}
-            //onCheck={props.onCheck}
+            //@ts-ignore
+            onCheck={onCheck}
             onSelect={onSelect}
             checkedKeys={checkedKeys}
-            selectedKeys={selectedKeys}
             showLine
+            switcherIcon={<Icon type="down" />}
             >
                 {compiledPortals.map((cPortal) =>  (
-                <TreeNode checkable title={cPortal.portal.title} key={`Tree_Portal_${cPortal.portal.key}`}>
+                <TreeNode checkable title={`${cPortal.numKeys} ${cPortal.portal.title}`} key={`Tree_Portal_${cPortal.portal.key}`}>
                     {cPortal.linksFrom.map(link => (
                         <TreeNode title={link.dest.title} key={`Tree_Link_${cPortal.portal.key}_${link.dest.key}`} />
                     ))}
