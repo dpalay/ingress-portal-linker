@@ -1,38 +1,58 @@
-import React from 'react'
+import React, {useState} from 'react'
 import PortalCard from '../PortalCard/PortalCard';
 import Portal from '../../Utils/Objects/Portal';
 import Link from '../../Utils/Objects/Link';
-import { Row, Col } from 'antd';
+import { Row, Col, Tree } from 'antd';
 
 interface ICompiledPortal { portal: Portal, linksFrom: Link[], linksTo: Link[], numKeys: number }
 interface Iprops {
-    compiledPortals: ICompiledPortal[];
+    compiledPortals: ICompiledPortal[]
 }
 
+const {TreeNode} = Tree
+
 const CardResults: React.FC<Iprops> = (props: Iprops) => {
+    const {compiledPortals} = props;
+    const [expandedKeys, setExpandedKeys] = useState<string[]>([])
+    const [selectedKeys, setSelectedKeys] = useState<string[]>([])
+    const [checkedKeys, setCheckedKeys] = useState<string[]>([])
+    const [autoExpandParent, setAutoExpandParent] = useState(true)
+
+    
+    
+const onCheck = (checkedKeys: []) => {
+    console.log('onCheck', checkedKeys);
+    setCheckedKeys(checkedKeys);
+  };
+
+const  onSelect = (selectedKeys: string[], info: any) => {
+    console.log('onSelect', info);
+    console.log('onSelect', selectedKeys);
+    //setSelectedKeys( selectedKeys );
+  };
+
     return (
-        <div className={"ingress-frame"} style={{overflow: "scroll", maxHeight:"250px"}}>
-            
+        <div className={"ingress-frame"} style={{overflow: "scroll", maxHeight:"400px"}}>
+            <Tree 
+            defaultExpandAll={false}
+            checkable
+            //onExpand={onExpand}
+            expandedKeys={expandedKeys}
+            autoExpandParent={autoExpandParent}
+            //onCheck={props.onCheck}
+            onSelect={onSelect}
+            checkedKeys={checkedKeys}
+            selectedKeys={selectedKeys}
+            showLine
+            >
+                {compiledPortals.map((cPortal) =>  (
+                <TreeNode checkable title={cPortal.portal.title} key={`Tree_Portal_${cPortal.portal.key}`}>
+                    {cPortal.linksFrom.map(link => (
+                        <TreeNode title={link.dest.title} key={`Tree_Link_${cPortal.portal.key}_${link.dest.key}`} />
+                    ))}
+                </TreeNode> ))}
+            </Tree>
 
-                {props.compiledPortals.map((cPortal, i, arr) => {
-                    return (
-                        <>
-                            {i % 2 === 0 && (
-                                <Row  align="bottom" gutter={[16, { xs: 8, sm: 16, md: 24, lg: 32 }]}>
-                                <Col span={12}>
-                                    <PortalCard key={cPortal.portal.key} cPortal={cPortal} />
-                                </Col>
-                                <Col span={12}>
-                                    {arr[i + 1] && (
-                                        <PortalCard key={arr[i + 1].portal.key} cPortal={arr[i + 1]} />)}
-                                        </Col>
-                                </Row>
-                            )}
-                            </>
-                    )
-                }
-
-                )} 
         </div>
     )
 
