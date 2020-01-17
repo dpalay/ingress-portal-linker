@@ -30,7 +30,7 @@ interface IRawData {
 const anchorDefault: IDirection = "West";
 const primaryDefault: IDirection = "North";
 const { Header, Footer, Content } = Layout;
-const initialCount = rawPortals.length;
+
 //const initialCount = 5
 
 const App: React.FC = () => {
@@ -60,7 +60,9 @@ const App: React.FC = () => {
     };
     const [value, dispatch] = useReducer(handleClickReducer, initialCount);
     */
+  const  initialCount = rawData.length;;
   const value = initialCount;
+
   const data: Portal[] = useMemo(
     () =>
       rawData
