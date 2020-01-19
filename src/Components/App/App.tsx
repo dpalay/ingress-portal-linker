@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import {BrowserRouter as Router, Switch, Route, Link} from "react-router-dom";
-import { Row, Col, Layout, Button, Affix } from "antd";
+import { Row, Col, Layout, Button } from "antd";
 import "./App.css";
 import Viz from "../Viz/Viz";
 import AnchorSelect from "../AnchorSelect/AnchorSelect";
@@ -206,9 +206,11 @@ const App: React.FC = () => {
                   <Row justify="center">
                     <Col lg={{span: 4, push:20}}>
                       <div className="ingress-text">
-                      <Link to="/">Home</Link>
-                      <Link to="/about">About</Link>
-                      <Link to="/view">Show Map</Link>
+                      <ul>
+                      <li><Link to="/">Home</Link></li>
+                      <li><Link to="/about">About</Link></li>
+                      <li><Link to="/view">Show Map</Link></li>
+                      </ul>
                       </div>
                     </Col>
                     <Col lg={{ span: 10, pull: 4 }} md={{ span: 20 }}>
@@ -256,8 +258,6 @@ const App: React.FC = () => {
               <Col span={17}>
               <Switch>
                 <Route path="/view">
-
-                <Affix offsetTop={10}>
                 <Viz
                   data={data}
                   whichAnchor={whichAnchor}
@@ -266,7 +266,9 @@ const App: React.FC = () => {
                   allLinks={allLinks}
                   anchor={anchor}
                   />
-                  </Affix>
+                  </Route>
+                  <Route path="/about">
+                    <div className="ingress-text">This page is designed to help develop a linking pattern for portals to optimally link them together.</div>
                   </Route>
                   <Route path="/">
                     <div className="ingress-text">Home screen</div>
