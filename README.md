@@ -1,44 +1,61 @@
+# Ingress Portal Linker
+
+A web-based tool for Ingress players to plan optimal portal linking strategies by calculating non-intersecting links between portals.
+
+## What is this?
+
+Ingress Portal Linker helps players of the augmented reality game [Ingress](https://www.ingress.com/) plan complex linking operations. In Ingress, players create links between portals to form control fields, but links cannot cross each other. This tool:
+
+- **Calculates optimal linking patterns** - Automatically determines which portals can be linked without intersections
+- **Visualizes portal networks** - Interactive D3-powered visualization shows your portal layout and planned links
+- **Plans key requirements** - Displays how many keys are needed for each portal
+- **Supports anchor strategies** - Choose anchor portals from different directions (North, South, East, West) and starting orientations
+
+## Features
+
+- **Anchor Portal Selection**: Choose which portal to use as your anchor based on cardinal directions
+- **Primary Direction Control**: Set the starting direction for your linking strategy
+- **Portal Data Import**: Paste portal data including coordinates, titles, and Intel links
+- **Interactive Visualization**: See your portals and links rendered in real-time with D3.js
+- **Link Planning Tree**: View a hierarchical tree of planned links with key counts
+- **Non-intersection Algorithm**: Automatically ensures no planned links cross each other
+
+## Usage
+
+1. **Select Anchor Portal**: Choose the direction (North, South, East, West) for your anchor portal
+2. **Set Primary Direction**: Choose where to start linking from
+3. **Add Portal Data**: Input your portal information (coordinates, names, links)
+4. **Review Results**: See the calculated linking order and key requirements
+5. **Follow the Plan**: Use the tree view to execute your linking strategy in-game
+
+## Technology Stack
+
+- **React** with TypeScript
+- **D3.js** for data visualization
+- **Ant Design** for UI components
+- **D3-Delaunay** for geometric calculations
+- Built with Create React App
+
+## Development
+
+### Available Scripts
+
+#### `npm start`
+
+Runs the app in development mode at [http://localhost:3000](http://localhost:3000). The page will reload when you make edits.
+
+#### `npm test`
+
+Launches the test runner in interactive watch mode.
+
+#### `npm run build`
+
+Builds the app for production to the `build` folder. The build is optimized and minified.
+
+### Deployment
+
+The project is configured for Firebase Hosting. Run `npm run build` followed by `firebase deploy` to deploy.
+
+---
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
